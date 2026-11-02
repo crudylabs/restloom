@@ -1,0 +1,17 @@
+{
+  "name": "restloom-workspace",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/core",
+    "packages/postgres"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run build && node --test 'packages/*/test/*.test.mjs' 'conformance/*.test.mjs'",
+    "check": "npm run build && npm test"
+  }
+}

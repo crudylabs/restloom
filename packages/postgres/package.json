@@ -1,0 +1,32 @@
+{
+  "name": "@crudy/restloom-postgres",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Postgres dialect for restloom",
+  "keywords": ["restloom", "postgres", "postgresql", "rest", "api"],
+  "author": "Marc Villain",
+  "homepage": "https://restloom.crudy.fr",
+  "repository": { "type": "git", "url": "git+https://github.com/crudylabs/restloom.git", "directory": "packages/postgres" },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+  },
+  "files": ["dist", "LICENSE", "README.md"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p .",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@crudy/restloom": "^0.1.0"
+  },
+  "peerDependencies": {
+    "pg": "^8.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/pg": "^8.11.0",
+    "pg": "^8.16.0",
+    "typescript": "^5.9.0"
+  }
+}

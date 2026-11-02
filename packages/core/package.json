@@ -1,0 +1,24 @@
+{
+  "name": "@crudy/restloom",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A REST API generated from your database's catalog: discovery, a curl-friendly query grammar, relations of every kind, safe defaults",
+  "keywords": ["rest", "api", "postgrest", "sql", "database", "crud", "generator"],
+  "author": "Marc Villain",
+  "homepage": "https://restloom.crudy.fr",
+  "repository": { "type": "git", "url": "git+https://github.com/crudylabs/restloom.git", "directory": "packages/core" },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+  },
+  "files": ["dist", "LICENSE", "README.md"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p .",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  }
+}
