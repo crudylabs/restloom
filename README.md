@@ -8,13 +8,13 @@
 A REST API generated from your database's catalog. Name the schemas or tables to serve, and restloom reads their columns, types, keys and relations, and answers queries like this one:
 
 ```
-GET /assets?select=id,name,owner(name),tags(name)&tags.name=in.(pci,gdpr)&order=owner.name.desc
+GET /todos?select=id,name,owner(name),tags(name)&tags.name=in.(work,home)&order=owner.name.desc
 ```
 
 ```json
 [
-  { "id": 4, "name": "payroll db", "owner": { "name": "Linus" }, "tags": [{ "name": "pci" }, { "name": "gdpr" }] },
-  { "id": 2, "name": "mail relay", "owner": { "name": "Grace" }, "tags": [{ "name": "gdpr" }] }
+  { "id": 4, "name": "pay rent", "owner": { "name": "Linus" }, "tags": [{ "name": "work" }, { "name": "home" }] },
+  { "id": 2, "name": "file taxes", "owner": { "name": "Grace" }, "tags": [{ "name": "home" }] }
 ]
 ```
 
@@ -51,7 +51,7 @@ import { postgres } from '@crudy/restloom-postgres';
 const rest = createREST({
     db: postgres(new pg.Pool()),
     expose: { schemas: ['app'] },
-    resources: { assets: { write: true } },
+    resources: { todos: { write: true } },
 });
 
 http.createServer(nodeListener(rest)).listen(3000);

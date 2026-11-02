@@ -11,8 +11,8 @@ restloom keeps what makes PostgREST pleasant, the catalog as the source and a qu
 | Writes | everything the role may write | off until a resource enables them, by column |
 | Authorisation | database roles and row security | your hooks, plus row security where the database has it |
 | Relations | inferred from foreign keys | inferred from foreign keys, overridable, removable |
-| Filtering through a to-many relation | an embed with `!inner` | `tags.name=eq.pci`: at least one; `not.`: none |
-| Ordering by a related column | on embedded resources | `order=owner.name`, `order=incidents.count` |
+| Filtering through a to-many relation | an embed with `!inner` | `tags.name=eq.work`: at least one; `not.`: none |
+| Ordering by a related column | on embedded resources | `order=owner.name`, `order=steps.count` |
 | A name that is a keyword | not addressable as a filter | quote it: `"limit"=eq.5` |
 | Over-sized limit | capped | refused with `limit_exceeded` |
 | Errors | database messages | stable codes, no database text |

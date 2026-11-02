@@ -62,7 +62,7 @@ export interface ProcedureOptions {
 
 export interface RestRequest<C = unknown> {
     method: string;
-    /** Path without the mount prefix, e.g. /assets/42. */
+    /** Path without the mount prefix, e.g. /todos/42. */
     path: string;
     query: URLSearchParams;
     headers: Record<string, string | undefined>;

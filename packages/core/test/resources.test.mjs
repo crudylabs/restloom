@@ -4,7 +4,7 @@ import { resources } from './fixture.mjs';
 
 test('only exposed schemas become resources', () => {
     const r = resources();
-    assert.deepEqual([...r.keys()].sort(), ['asset_tags', 'assets', 'tags', 'users']);
+    assert.deepEqual([...r.keys()].sort(), ['tags', 'todo_tags', 'todos', 'users']);
 });
 
 test('sensitive columns are hidden unless shown, and hide removes any column', () => {
@@ -16,12 +16,12 @@ test('sensitive columns are hidden unless shown, and hide removes any column', (
 test('foreign keys give to-one, to-many and many-to-many relations', () => {
     const r = resources();
     const rel = (res, name) => { const x = r.get(res).relations.get(name); return x && `${x.kind}:${x.target.name}${x.through ? ':through' : ''}`; };
-    assert.equal(rel('assets', 'owner'), 'one:users');
-    assert.equal(rel('users', 'assets'), 'many:assets');
+    assert.equal(rel('todos', 'owner'), 'one:users');
+    assert.equal(rel('users', 'todos'), 'many:todos');
     assert.equal(rel('users', 'manager'), 'one:users');
     assert.equal(rel('users', 'users'), 'many:users');
-    assert.equal(rel('assets', 'tags'), 'many:tags:through');
-    assert.equal(rel('tags', 'assets'), 'many:assets:through');
+    assert.equal(rel('todos', 'tags'), 'many:tags:through');
+    assert.equal(rel('tags', 'todos'), 'many:todos:through');
 });
 
 test('relations can be renamed, removed and declared', () => {
@@ -32,8 +32,8 @@ test('relations can be renamed, removed and declared', () => {
 });
 
 test('writes are off by default and never reach generated or key columns', () => {
-    assert.equal(resources().get('assets').write.create, false);
-    const a = resources({ resources: { assets: { write: true } } }).get('assets');
+    assert.equal(resources().get('todos').write.create, false);
+    const a = resources({ resources: { todos: { write: true } } }).get('todos');
     assert.equal(a.columns.get('name').create, true);
     assert.equal(a.columns.get('created_at').create, false);
     assert.equal(a.columns.get('id').update, false);

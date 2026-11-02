@@ -5,12 +5,12 @@ Writes are off until a resource enables them. The examples on this page run with
 ```ts
 resources: {
     tags: { write: true },
-    assets: { write: { create: ['name', 'status', 'owner_id', 'cost'], update: ['name', 'status', 'owner_id'], delete: false } },
-    incidents: { write: { create: true, update: true, delete: true, bulk: true } },
+    todos: { write: { create: ['name', 'status', 'owner_id', 'estimate'], update: ['name', 'status', 'owner_id'], delete: false } },
+    steps: { write: { create: true, update: true, delete: true, bulk: true } },
 },
 procedures: {
-    'assets/{asset}/retire': { function: 'demo.retire_asset' },
-    'tags/{tag}/assets': { function: 'demo.assets_tagged' },
+    'todos/{todo}/complete': { function: 'demo.complete_todo' },
+    'tags/{tag}/todos': { function: 'demo.todos_tagged' },
 },
 ```
 
@@ -21,7 +21,7 @@ procedures: {
 | POST | `/tags` | creates one row, or an array of rows | 201 |
 | PATCH | `/tags/4` | updates one row | 204, or 200 with the row |
 | DELETE | `/tags/4` | deletes one row | 204, or 200 with the row |
-| PATCH, DELETE | `/incidents?severity=lt.3` | by filter, only where `bulk: true` | 204, or 200 with the rows |
+| PATCH, DELETE | `/steps?priority=lt.3` | by filter, only where `bulk: true` | 204, or 200 with the rows |
 
 ## Getting the rows back
 
@@ -63,13 +63,13 @@ POST /tags
 A column outside the resource's writable list is refused, whatever its value:
 
 ```http
-POST /assets
+POST /todos
 
-{ "name": "new laptop", "status": "open", "active": false }
+{ "name": "book dentist", "status": "open", "pinned": false }
 ```
 
 ```json
-{ "error": "not_writable", "message": "active" }
+{ "error": "not_writable", "message": "pinned" }
 ```
 
 ## Updating and deleting
@@ -77,7 +77,7 @@ POST /assets
 PATCH and DELETE act on one row, by its key. A row that does not exist, or is not visible, answers 404.
 
 ```http
-PATCH /assets/2?select=id,name,owner(name)
+PATCH /todos/2?select=id,name,owner(name)
 Prefer: return=representation
 
 { "owner_id": 1 }
@@ -86,7 +86,7 @@ Prefer: return=representation
 Answer: 200
 
 ```json
-{ "id": 2, "name": "mail relay", "owner": { "name": "Ada" } }
+{ "id": 2, "name": "file taxes", "owner": { "name": "Ada" } }
 ```
 
 ```http
@@ -106,7 +106,7 @@ DELETE /tags/3
 ```
 
 ```http
-DELETE /assets/1
+DELETE /todos/1
 ```
 
 ```json
@@ -116,18 +116,18 @@ DELETE /assets/1
 A resource with `bulk: true` also takes PATCH and DELETE on the collection, with at least one filter. Without a filter they are refused, so no request can empty a table by accident.
 
 ```http
-DELETE /incidents?severity=lt.3&select=id,title
+DELETE /steps?priority=lt.3&select=id,title
 Prefer: return=representation
 ```
 
 Answer: 200
 
 ```json
-[{ "id": 2, "title": "Spoofed mail" }]
+[{ "id": 2, "title": "Find the receipts" }]
 ```
 
 ```http
-DELETE /incidents
+DELETE /steps
 ```
 
 ```json
@@ -149,9 +149,9 @@ POST /tags
 ```
 
 ```http
-POST /incidents
+POST /steps
 
-{ "id": 9, "title": "Lost badge", "asset_id": 99, "severity": 1, "opened_on": "2026-04-01" }
+{ "id": 9, "title": "Call the clinic", "todo_id": 99, "priority": 1, "due_on": "2026-04-01" }
 ```
 
 ```json
@@ -165,9 +165,9 @@ A procedure calls a database function at a path you choose. A `{name}` in the pa
 A procedure is a POST unless declared `method: 'GET'`. A GET procedure takes its arguments from the query string (`/search?q=vpn&limit=10`), each once, and runs in a read-only transaction: use it for a function without side effects.
 
 ```http
-POST /assets/3/retire
+POST /todos/3/complete
 
-{ "reason": "end of life" }
+{ "note": "bought a new one" }
 ```
 
 ```json
@@ -177,20 +177,20 @@ POST /assets/3/retire
 A function returning a set answers an array of its rows. Mail relay belongs to Ada since the update above.
 
 ```http
-POST /tags/gdpr/assets
+POST /tags/home/todos
 ```
 
 ```json
 [
-  { "id": 2, "name": "mail relay", "status": "open", "owner_id": 1, "cost": 300, "active": true, "created_at": "2026-01-05T09:30:00+00:00" },
-  { "id": 4, "name": "payroll db", "status": "open", "owner_id": 3, "cost": 4000, "active": true, "created_at": "2026-02-11T16:45:00+00:00" }
+  { "id": 2, "name": "file taxes", "status": "open", "owner_id": 1, "estimate": 1, "pinned": true, "created_at": "2026-01-05T09:30:00+00:00" },
+  { "id": 4, "name": "pay rent", "status": "open", "owner_id": 3, "estimate": 4, "pinned": true, "created_at": "2026-02-11T16:45:00+00:00" }
 ]
 ```
 
 ```http
-POST /assets/3/retire
+POST /todos/3/complete
 
-{ "why": "no reason" }
+{ "why": "too busy" }
 ```
 
 ```json

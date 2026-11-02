@@ -7,7 +7,7 @@ const response = await rest.handle({ method, path, query, headers, body, context
 // { status, headers, body }
 ```
 
-`handle` never throws: every failure is a response. `path` is the path below where the API is mounted (`/assets/4`), `query` a `URLSearchParams`, `body` the parsed JSON.
+`handle` never throws: every failure is a response. `path` is the path below where the API is mounted (`/todos/4`), `query` a `URLSearchParams`, `body` the parsed JSON.
 
 ## Node
 

@@ -8,16 +8,16 @@ restloom reads the database's catalog once, on the first request, and builds the
 
 ```ts
 expose: { schemas: ['app'] }                       // every table and view of app
-expose: { tables: ['app.assets', 'app.users'] }    // only these
+expose: { tables: ['app.todos', 'app.users'] }    // only these
 ```
 
 A resource is named after its table. When two exposed schemas hold a table of the same name, both are named `schema_table`. `resources.<name>.expose: false` removes one, for example a junction table you only want used as a relation:
 
 ```ts
-resources: { asset_tags: { expose: false } }
+resources: { todo_tags: { expose: false } }
 ```
 
-A resource's key is its primary key. A view has none, so it uses a column named `id` when it has one, or the columns you give it: `resources: { asset_rows: { key: ['asset_id'] } }`. A resource without a key can still be listed, but has no `/{id}` path and no stable page order.
+A resource's key is its primary key. A view has none, so it uses a column named `id` when it has one, or the columns you give it: `resources: { todo_rows: { key: ['todo_id'] } }`. A resource without a key can still be listed, but has no `/{id}` path and no stable page order.
 
 ## Columns
 
@@ -36,8 +36,8 @@ Relations come from foreign keys between exposed resources:
 
 | In the catalog | Gives |
 |---|---|
-| `assets.owner_id` references `users.id` | `assets.owner`, to-one; `users.assets`, to-many |
-| `asset_tags` has a primary key made of a key to `assets` and a key to `tags` | `assets.tags` and `tags.assets`, many-to-many |
+| `todos.owner_id` references `users.id` | `todos.owner`, to-one; `users.todos`, to-many |
+| `todo_tags` has a primary key made of a key to `todos` and a key to `tags` | `todos.tags` and `tags.todos`, many-to-many |
 
 Names:
 

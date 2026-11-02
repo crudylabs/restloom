@@ -33,8 +33,8 @@ for (const page of PAGES) {
 describe('postgres procedures outside the exposed schemas', { skip: !url && 'RESTLOOM_PG_URL is not set' }, () => {
     test('a declared function is read even when only tables are exposed', async () => {
         await pool.query(fixture);
-        const rest = createREST({ db: postgres(pool), expose: { tables: ['demo.tags'] }, procedures: { 'assets/{asset}/retire': { function: 'demo.retire_asset' } } });
-        const res = await rest.handle({ method: 'POST', path: '/assets/3/retire', query: new URLSearchParams(), headers: {}, body: {}, context: undefined });
+        const rest = createREST({ db: postgres(pool), expose: { tables: ['demo.tags'] }, procedures: { 'todos/{todo}/complete': { function: 'demo.complete_todo' } } });
+        const res = await rest.handle({ method: 'POST', path: '/todos/3/complete', query: new URLSearchParams(), headers: {}, body: {}, context: undefined });
         assert.equal(res.status, 200);
         assert.equal(res.body, 3);
     });
@@ -44,7 +44,7 @@ describe('postgres arrays, regular expressions and GET procedures', { skip: !url
     let rest;
     before(async () => {
         await pool.query(fixture);
-        rest = createREST({ db: postgres(pool), expose: { schemas: ['demo'] }, procedures: { 'tags/{tag}/assets': { function: 'demo.assets_tagged', method: 'GET' } } });
+        rest = createREST({ db: postgres(pool), expose: { schemas: ['demo'] }, procedures: { 'tags/{tag}/todos': { function: 'demo.todos_tagged', method: 'GET' } } });
     });
     const get = (path, qs = '') => rest.handle({ method: 'GET', path, query: new URLSearchParams(qs), headers: {}, context: undefined });
 
@@ -52,7 +52,7 @@ describe('postgres arrays, regular expressions and GET procedures', { skip: !url
         assert.deepEqual((await get('/notes', 'select=id&labels=ov.{a,z}')).body, [{ id: 1 }, { id: 3 }]);
         assert.deepEqual((await get('/notes', 'select=id&labels=cs.{b}')).body, [{ id: 1 }, { id: 2 }]);
         assert.deepEqual((await get('/notes', 'select=id&labels=cd.{a,b,z}')).body, [{ id: 1 }, { id: 3 }]);
-        assert.equal((await get('/assets', 'name=ov.{a}')).body.error, 'bad_operator');
+        assert.equal((await get('/todos', 'name=ov.{a}')).body.error, 'bad_operator');
     });
 
     test('regular expressions, with and without case', async () => {
@@ -61,10 +61,10 @@ describe('postgres arrays, regular expressions and GET procedures', { skip: !url
     });
 
     test('a GET procedure takes its arguments from the query and refuses POST', async () => {
-        const rows = (await get('/tags/gdpr/assets', 'select=ignored')).body;
+        const rows = (await get('/tags/home/todos', 'select=ignored')).body;
         assert.equal(rows.error, 'unknown_argument');
-        assert.deepEqual((await get('/tags/gdpr/assets')).body.map((r) => r.id), [2, 4]);
-        const post = await rest.handle({ method: 'POST', path: '/tags/gdpr/assets', query: new URLSearchParams(), headers: {}, body: {}, context: undefined });
+        assert.deepEqual((await get('/tags/home/todos')).body.map((r) => r.id), [2, 4]);
+        const post = await rest.handle({ method: 'POST', path: '/tags/home/todos', query: new URLSearchParams(), headers: {}, body: {}, context: undefined });
         assert.equal(post.status, 405);
     });
 });

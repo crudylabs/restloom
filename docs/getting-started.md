@@ -34,7 +34,7 @@ http.createServer(nodeListener(rest, { prefix: '/api' })).listen(3000);
 Every table and view of `app` is now a resource, read-only:
 
 ```sh
-curl -g 'http://localhost:3000/api/assets?select=id,name,owner(name)&status=eq.open'
+curl -g 'http://localhost:3000/api/todos?select=id,name,owner(name)&status=eq.open'
 ```
 
 ## Next

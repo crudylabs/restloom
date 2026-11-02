@@ -2,8 +2,8 @@
 export const PAGES = ['query-grammar.md', 'writes.md'];
 
 const PROCEDURES = {
-    'assets/{asset}/retire': { function: 'demo.retire_asset' },
-    'tags/{tag}/assets': { function: 'demo.assets_tagged' },
+    'todos/{todo}/complete': { function: 'demo.complete_todo' },
+    'tags/{tag}/todos': { function: 'demo.todos_tagged' },
 };
 
 /**
@@ -12,18 +12,18 @@ const PROCEDURES = {
  */
 const AVAILABLE = {
     postgres: Object.keys(PROCEDURES),
-    mssql: ['tags/{tag}/assets'],
-    mysql: ['assets/{asset}/retire'],
+    mssql: ['tags/{tag}/todos'],
+    mysql: ['todos/{todo}/complete'],
     sqlite: [],
 };
 
 export const OPTIONS = {
     expose: { schemas: ['demo'] },
     resources: {
-        asset_tags: { expose: false },
+        todo_tags: { expose: false },
         tags: { write: true },
-        assets: { write: { create: ['name', 'status', 'owner_id', 'cost'], update: ['name', 'status', 'owner_id'], delete: false } },
-        incidents: { write: { create: true, update: true, delete: true, bulk: true } },
+        todos: { write: { create: ['name', 'status', 'owner_id', 'estimate'], update: ['name', 'status', 'owner_id'], delete: false } },
+        steps: { write: { create: true, update: true, delete: true, bulk: true } },
     },
 };
 
