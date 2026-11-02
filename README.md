@@ -1,4 +1,9 @@
-# restloom
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/brand/logo-dark.svg">
+    <img alt="restloom" src=".github/brand/logo-light.svg" height="110">
+  </picture>
+</h1>
 
 A REST API generated from your database's catalog. Name the schemas or tables to serve, and restloom reads their columns, types, keys and relations, and answers queries like this one:
 
