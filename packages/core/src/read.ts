@@ -30,6 +30,8 @@ export async function readRows(db: Dialect, tx: Tx, resource: Resource, request:
     scope: (r: Resource) => Filter[], id?: string, extra: Filter[] = []): Promise<RestResponse> {
     const plan = parseRead(resource, request.query, limits);
     plan.where.push(...extra);
+    const prefer = /\bcount=(exact|estimated)\b/.exec(request.headers.prefer ?? '');
+    if (plan.count === 'none' && prefer) plan.count = prefer[1] as 'exact' | 'estimated';
     if (id !== undefined) {
         plan.where.unshift(keyFilter(resource, id));
         plan.limit = 1;

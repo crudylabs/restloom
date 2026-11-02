@@ -23,8 +23,11 @@ export interface Dialect {
     readonly name: string;
     readonly capabilities: Capabilities;
     readonly renderer: SqlRenderer;
-    /** Reads the tables, views and functions of the given schemas and tables. */
-    introspect(scope: { schemas: string[]; tables: string[] }): Promise<Catalog>;
+    /**
+     * Reads the tables and views of the given schemas and tables, and the
+     * functions of the given schemas plus the named ones (schema.name).
+     */
+    introspect(scope: { schemas: string[]; tables: string[]; functions: string[] }): Promise<Catalog>;
     /** Runs fn in one transaction with a statement timeout; read-only when asked. */
     transaction<T>(fn: (tx: Tx) => Promise<T>, options: { timeoutMs: number; readOnly: boolean }): Promise<T>;
     /** The JSON value of a statement's `r` column as a JavaScript value: drivers that parse JSON return it as is, others parse text. */

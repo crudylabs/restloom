@@ -29,3 +29,13 @@ for (const page of PAGES) {
         }
     });
 }
+
+describe('postgres procedures outside the exposed schemas', { skip: !url && 'RESTLOOM_PG_URL is not set' }, () => {
+    test('a declared function is read even when only tables are exposed', async () => {
+        await pool.query(fixture);
+        const rest = createREST({ db: postgres(pool), expose: { tables: ['demo.tags'] }, procedures: { 'assets/{asset}/retire': { function: 'demo.retire_asset' } } });
+        const res = await rest.handle({ method: 'POST', path: '/assets/3/retire', query: new URLSearchParams(), headers: {}, body: {}, context: undefined });
+        assert.equal(res.status, 200);
+        assert.equal(res.body, 3);
+    });
+});

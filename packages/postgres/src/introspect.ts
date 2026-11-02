@@ -45,17 +45,17 @@ SELECT n.nspname AS schema, p.proname AS name, p.proretset AS returns_set, p.pro
        (SELECT array_agg(b.typname::text || ':' || b.typtype::text || ':' || b.typcategory::text ORDER BY ord)
           FROM unnest(p.proargtypes) WITH ORDINALITY u(t, ord) JOIN pg_type b ON b.oid = u.t) AS types
   FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
- WHERE p.prokind = 'f' AND n.nspname = ANY($1::text[])`;
+ WHERE p.prokind = 'f' AND (n.nspname = ANY($1::text[]) OR n.nspname || '.' || p.proname = ANY($2::text[]))`;
 
 type Row = Record<string, unknown>;
 
 /** Reads the tables, views, keys, foreign keys and functions of the exposed schemas and tables. */
-export async function introspect(pool: Pool, scope: { schemas: string[]; tables: string[] }): Promise<Catalog> {
+export async function introspect(pool: Pool, scope: { schemas: string[]; tables: string[]; functions: string[] }): Promise<Catalog> {
     const { rows: tables } = await pool.query<Row>(TABLES, [scope.schemas, scope.tables]);
     const oids = tables.map((t) => t.oid as number);
     const [columns, keys, fks, fns] = await Promise.all([
         pool.query<Row>(COLUMNS, [oids]), pool.query<Row>(PRIMARY_KEYS, [oids]),
-        pool.query<Row>(FOREIGN_KEYS, [oids]), pool.query<Row>(FUNCTIONS, [scope.schemas]),
+        pool.query<Row>(FOREIGN_KEYS, [oids]), pool.query<Row>(FUNCTIONS, [scope.schemas, scope.functions]),
     ]);
     const byOid = new Map<number, CatalogTable>();
     for (const t of tables) {

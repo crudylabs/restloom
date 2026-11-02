@@ -1,6 +1,6 @@
 {
   "name": "@crudy/restloom-mssql",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "SQL Server dialect for restloom",
   "keywords": [
@@ -37,7 +37,7 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@crudy/restloom": "^0.1.0"
+    "@crudy/restloom": "^0.2.0"
   },
   "peerDependencies": {
     "mssql": "^12.0.0"

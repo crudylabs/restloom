@@ -9,6 +9,7 @@ SELECT o.object_id AS id, SCHEMA_NAME(o.schema_id) AS s, o.name AS n, RTRIM(o.ty
   FROM sys.objects o
  WHERE o.type IN ('U', 'V', 'FN', 'IF', 'TF')
    AND (SCHEMA_NAME(o.schema_id) IN (SELECT value FROM STRING_SPLIT(@schemas, ','))
+        OR (o.type IN ('FN', 'IF', 'TF') AND SCHEMA_NAME(o.schema_id) + '.' + o.name IN (SELECT value FROM STRING_SPLIT(@functions, ',')))
         OR (o.type IN ('U', 'V') AND SCHEMA_NAME(o.schema_id) + '.' + o.name IN (SELECT value FROM STRING_SPLIT(@tables, ','))))`;
 
 const COLUMNS = `
@@ -40,13 +41,13 @@ SELECT p.object_id AS id, SUBSTRING(p.name, 2, 200) AS name, TYPE_NAME(p.user_ty
  ORDER BY p.object_id, p.parameter_id`;
 
 /** Reads tables, views and functions from the catalog views. T-SQL does not expose parameter defaults, so every argument is required. */
-export async function introspect(pool: ConnectionPool, scope: { schemas: string[]; tables: string[] }): Promise<Catalog> {
+export async function introspect(pool: ConnectionPool, scope: { schemas: string[]; tables: string[]; functions: string[] }): Promise<Catalog> {
     const run = async (sql: string, params: Record<string, string>) => {
         const req = pool.request();
         for (const [k, v] of Object.entries(params)) req.input(k, v);
         return (await req.query(sql)).recordset as Row[];
     };
-    const objects = await run(OBJECTS, { schemas: scope.schemas.join(','), tables: scope.tables.join(',') });
+    const objects = await run(OBJECTS, { schemas: scope.schemas.join(','), tables: scope.tables.join(','), functions: scope.functions.join(',') });
     const ids = { ids: objects.map((o) => String(o.id)).join(',') };
     const [columns, keys, fks, params] = await Promise.all([run(COLUMNS, ids), run(PRIMARY_KEYS, ids), run(FOREIGN_KEYS, ids), run(PARAMETERS, ids)]);
     const columnsOf = (id: unknown) => columns.filter((c) => c.id === id).map((c) => ({

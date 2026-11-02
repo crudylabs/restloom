@@ -43,7 +43,8 @@ export function createREST<C = unknown>(options: RestOptions<C>): Rest<C> {
     const db = options.db;
     let loading: Promise<Api> | null = null;
 
-    const load = () => (loading ??= db.introspect({ schemas: options.expose.schemas ?? [], tables: options.expose.tables ?? [] })
+    const functions = Object.values(options.procedures ?? {}).map((p) => p.function).filter((f) => f.includes('.'));
+    const load = () => (loading ??= db.introspect({ schemas: options.expose.schemas ?? [], tables: options.expose.tables ?? [], functions })
         .then((catalog: Catalog) => ({
             resources: buildResources(catalog, options as RestOptions<unknown>),
             procedures: buildProcedures(catalog, options.procedures ?? {}),

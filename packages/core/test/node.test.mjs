@@ -18,3 +18,9 @@ test('the node listener serves under its prefix and refuses bad bodies', async (
         server.close();
     }
 });
+
+test('Prefer: count=exact counts as count=exact does', async () => {
+    const rest = createREST({ db: fakeDialect(), expose: { schemas: ['app'] } });
+    const res = await rest.handle({ method: 'GET', path: '/items', query: new URLSearchParams(), headers: { prefer: 'count=exact' }, context: undefined });
+    assert.equal(res.headers['content-range'], '0-0/1');
+});

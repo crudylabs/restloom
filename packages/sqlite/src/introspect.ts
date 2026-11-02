@@ -5,7 +5,7 @@ import { logical } from './types.js';
 type Row = Record<string, unknown>;
 
 /** Reads tables and views of the main database or of attached ones; SQLite's schemas are its attached databases. */
-export function introspect(db: Database, scope: { schemas: string[]; tables: string[] }): Catalog {
+export function introspect(db: Database, scope: { schemas: string[]; tables: string[]; functions: string[] }): Catalog {
     const schemas = new Set([...scope.schemas, ...scope.tables.map((t) => t.split('.')[0])]);
     const attached = new Set((db.prepare('PRAGMA database_list').all() as Row[]).map((r) => r.name as string));
     const tables: CatalogTable[] = [];

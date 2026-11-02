@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-02
+
+### Added
+- `Prefer: count=exact` (or `estimated`) counts a list, as the `count` parameter does.
+- A declared procedure's function is read wherever it lives, not only in an exposed schema.
+
+### Changed
+- `Dialect.introspect` takes the declared functions as `functions`.
+
+## [0.1.0] - 2026-11-02
+
 ### Added
 - `@crudy/restloom`: discovery from the catalog, relations from foreign keys and junction tables, the read grammar, the overridable SQL renderer, `createREST` and a Node `http` listener.
 - Writes: create, update and delete by key, bulk by filter where enabled, scope applied, rows read back with `Prefer: return=representation`.

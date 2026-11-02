@@ -7,9 +7,10 @@ type Row = Record<string, unknown>;
 const IN_SCOPE = '(t.TABLE_SCHEMA IN (?) OR CONCAT(t.TABLE_SCHEMA, \'.\', t.TABLE_NAME) IN (?))';
 
 /** Reads tables, views, columns, keys and functions from information_schema. MySQL's schemas are its databases. */
-export async function introspect(pool: Pool, scope: { schemas: string[]; tables: string[] }): Promise<Catalog> {
+export async function introspect(pool: Pool, scope: { schemas: string[]; tables: string[]; functions: string[] }): Promise<Catalog> {
     const schemas = scope.schemas.length ? scope.schemas : [''];
     const tablesIn = scope.tables.length ? scope.tables : [''];
+    const functionsIn = scope.functions.length ? scope.functions : [''];
     const q = async (sql: string, params: unknown[]) => (await pool.query(sql, params))[0] as Row[];
     const [tables, columns, keys, params, functions] = await Promise.all([
         q(`SELECT TABLE_SCHEMA AS s, TABLE_NAME AS n, TABLE_TYPE AS k FROM information_schema.TABLES t WHERE ${IN_SCOPE}`, [schemas, tablesIn]),
@@ -22,8 +23,8 @@ export async function introspect(pool: Pool, scope: { schemas: string[]; tables:
             WHERE ${IN_SCOPE} AND (k.CONSTRAINT_NAME = 'PRIMARY' OR k.REFERENCED_TABLE_NAME IS NOT NULL)
             ORDER BY k.CONSTRAINT_NAME, k.ORDINAL_POSITION`, [schemas, tablesIn]),
         q(`SELECT SPECIFIC_SCHEMA AS s, SPECIFIC_NAME AS n, PARAMETER_NAME AS name, DATA_TYPE AS dt, DTD_IDENTIFIER AS ct
-             FROM information_schema.PARAMETERS WHERE SPECIFIC_SCHEMA IN (?) AND ORDINAL_POSITION > 0 ORDER BY ORDINAL_POSITION`, [schemas]),
-        q(`SELECT ROUTINE_SCHEMA AS s, ROUTINE_NAME AS n FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA IN (?) AND ROUTINE_TYPE = 'FUNCTION'`, [schemas]),
+             FROM information_schema.PARAMETERS WHERE (SPECIFIC_SCHEMA IN (?) OR CONCAT(SPECIFIC_SCHEMA, '.', SPECIFIC_NAME) IN (?)) AND ORDINAL_POSITION > 0 ORDER BY ORDINAL_POSITION`, [schemas, functionsIn]),
+        q(`SELECT ROUTINE_SCHEMA AS s, ROUTINE_NAME AS n FROM information_schema.ROUTINES WHERE (ROUTINE_SCHEMA IN (?) OR CONCAT(ROUTINE_SCHEMA, '.', ROUTINE_NAME) IN (?)) AND ROUTINE_TYPE = 'FUNCTION'`, [schemas, functionsIn]),
     ]);
     const byName = new Map<string, CatalogTable>();
     for (const t of tables) {
