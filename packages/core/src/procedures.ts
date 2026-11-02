@@ -5,6 +5,7 @@ import type { ProcedureOptions } from './options.js';
 
 export interface Procedure {
     template: string;
+    method: 'GET' | 'POST';
     pattern: RegExp;
     params: string[];
     fn: CatalogFunction;
@@ -24,7 +25,7 @@ export function buildProcedures(catalog: Catalog, declared: Record<string, Proce
             params.push(p[1]);
             return '([^/]+)';
         }).join('/');
-        return { template, pattern: new RegExp(`^/${source}/?$`), params, fn: matches[0] };
+        return { template, method: o.method ?? 'POST', pattern: new RegExp(`^/${source}/?$`), params, fn: matches[0] };
     });
 }
 
@@ -41,7 +42,24 @@ export function matchProcedure(list: Procedure[], path: string): { procedure: Pr
     return null;
 }
 
-/** The call's arguments from the path and the body, by name, each checked against its type. */
+/** A query-string argument as the body would give it: JSON for structured types, the text otherwise. */
+function fromQuery(raw: string, type: CatalogFunction['args'][number]['type']): unknown {
+    if (type !== 'json' && type !== 'array') return raw;
+    try { return JSON.parse(raw); } catch { throw badRequest('invalid_value', raw); }
+}
+
+/** The arguments of a GET procedure: each query parameter by name, once. */
+export function queryArgs(fn: CatalogFunction, query: URLSearchParams): Record<string, unknown> {
+    const out: Record<string, unknown> = {};
+    for (const [name, raw] of query) {
+        if (name in out) throw badRequest('bad_argument', name);
+        const arg = fn.args.find((a) => a.name === name);
+        out[name] = arg ? fromQuery(raw, arg.type) : raw;
+    }
+    return out;
+}
+
+/** The call's arguments from the path and the body (or query), by name, each checked against its type. */
 export function procedureArgs(fn: CatalogFunction, fromPath: Record<string, string>, body: unknown): [string, unknown][] {
     if (body !== undefined && (body === null || typeof body !== 'object' || Array.isArray(body))) throw badRequest('bad_body', 'arguments are an object');
     const given: Record<string, unknown> = { ...(body as Record<string, unknown> | undefined), ...fromPath };

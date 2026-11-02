@@ -40,6 +40,8 @@ The core decides everything else from the logical types: which operators a colum
 | `nested(expr)` | a nested JSON subquery, unchanged |
 | `like(expr, pattern, insensitive)` | `LIKE` or `ILIKE ... ESCAPE '\'` |
 | `isBoolean(expr, value)` | `IS TRUE`, `IS FALSE` |
+| `regex(expr, pattern, insensitive)` | `~`, `~*`; throw `RestError(400, 'unsupported')` without regular expressions |
+| `arrayCompare(expr, op, array)` | `&&`, `@>`, `<@` |
 | `orderBy(expr, desc, nulls)` | `ASC`/`DESC NULLS FIRST`/`LAST` |
 | `page(limit, offset)` | `LIMIT n OFFSET m` |
 | `first(select)` | `... LIMIT 1` |

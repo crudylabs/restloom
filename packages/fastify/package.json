@@ -1,6 +1,6 @@
 {
   "name": "@crudy/restloom-fastify",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "description": "Fastify adapter for restloom",
   "keywords": [
@@ -36,7 +36,7 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@crudy/restloom": "^0.2.0"
+    "@crudy/restloom": "^0.3.0"
   },
   "peerDependencies": {
     "fastify": "^5.0.0"

@@ -46,6 +46,9 @@ export class SqlReader extends SqlPrimitives {
         switch (f.op) {
             case 'in': return `${expr} IN (${(f.value as Value[]).map(bind).join(', ')})`;
             case 'is': return f.value === null ? `${expr} IS NULL` : this.isBoolean(expr, f.value as boolean);
+            case 'ov': case 'cs': case 'cd': return this.arrayCompare(expr, f.op, ctx.params.add(f.value));
+            case 'match': return this.regex(expr, bind(f.value as Value), false);
+            case 'imatch': return this.regex(expr, bind(f.value as Value), true);
             case 'like': return this.like(expr, bind(f.value as Value), false);
             case 'ilike': return this.like(expr, bind(f.value as Value), true);
             default: return `${expr} ${CMP[f.op]} ${bind(f.value as Value)}`;

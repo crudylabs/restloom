@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-02
+
+### Added
+- `match` and `imatch` regular expression filters, on Postgres and MySQL; SQLite and SQL Server answer `unsupported`.
+- `ov`, `cs` and `cd` filters on Postgres array columns.
+- GET procedures (`method: 'GET'`): arguments from the query string, run read-only.
+
 ## [0.2.0] - 2026-11-02
 
 ### Added

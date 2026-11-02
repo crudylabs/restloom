@@ -1,4 +1,4 @@
-import { SqlRenderer, type CatalogColumn, type CatalogFunction, type Filter, type OrderTerm, type RenderContext, type Resource, type Statement } from '@crudy/restloom';
+import { RestError, SqlRenderer, type CatalogColumn, type CatalogFunction, type Filter, type OrderTerm, type RenderContext, type Resource, type Statement } from '@crudy/restloom';
 
 /**
  * SQL Server 2022: bracketed names, @p placeholders, JSON_OBJECT for rows and
@@ -42,6 +42,10 @@ export class MssqlRenderer extends SqlRenderer {
         return insensitive
             ? `LOWER(${expr}) LIKE LOWER(${pattern}) ESCAPE '\\'`
             : `${expr} COLLATE Latin1_General_100_CS_AS LIKE ${pattern} ESCAPE '\\'`;
+    }
+
+    regex(): string {
+        throw new RestError(400, 'unsupported', 'regular expressions');
     }
 
     isBoolean(expr: string, value: boolean): string {

@@ -9,7 +9,7 @@ A dialect is the package that knows one database: how to read its catalog, how t
 | `@crudy/restloom-mssql` | SQL Server 2022+ | `JSON_OBJECT`, `STRING_AGG` | `OUTPUT` | no | security policies | scalar and table functions |
 | `@crudy/restloom-sqlite` | SQLite 3.44+ (better-sqlite3) | `json_object`, `json_group_array` | `RETURNING` | no | no | none |
 
-Every dialect passes the same conformance suite, so a request answers the same rows on each. Where they differ, the sections below say how.
+Every dialect passes the same conformance suite, so a request answers the same rows on each. Regular expressions (`match`, `imatch`) need Postgres or MySQL, and array filters (`ov`, `cs`, `cd`) Postgres array columns; elsewhere they answer `unsupported`. Where else the dialects differ, the sections below say how.
 
 ## Postgres
 

@@ -16,7 +16,7 @@ A message never contains SQL or database text.
 | `method_not_allowed` | 405 | the resource does not allow this method, or a procedure was not called with POST |
 | `unknown_column` | 400 | the column does not exist or is hidden |
 | `unknown_relation` | 400 | the relation does not exist |
-| `unknown_operator` | 400 | the operator is not one of `eq neq gt gte lt lte in like ilike is` |
+| `unknown_operator` | 400 | the operator is not one of `eq neq gt gte lt lte in like ilike match imatch is ov cs cd` |
 | `bad_operator` | 400 | the operator does not apply to the column's type |
 | `invalid_value` | 400 | the value does not fit the column's type |
 | `bad_filter` | 400 | a filter is not `operator.value` |
@@ -37,6 +37,7 @@ A message never contains SQL or database text.
 | `bad_limit`, `bad_offset` | 400 | not a whole number |
 | `limit_exceeded` | 400 | a limit over `limits.maxPage` |
 | `bad_count` | 400 | `count` is not `exact` or `estimated` |
+| `unsupported` | 400 | the database cannot do what was asked, e.g. a regular expression on SQLite |
 
 ## Writes and procedures
 
@@ -50,6 +51,7 @@ A message never contains SQL or database text.
 | `out_of_scope` | 403 | a value contradicts the host's scope |
 | `unknown_argument` | 400 | the procedure's function takes no argument of that name |
 | `missing_argument` | 400 | an argument without a default is missing |
+| `bad_argument` | 400 | a GET procedure's argument is given twice |
 
 ## The database
 

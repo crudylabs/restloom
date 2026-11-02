@@ -41,6 +41,10 @@ export class MysqlRenderer extends SqlRenderer {
             : `${expr} COLLATE utf8mb4_bin LIKE ${pattern} ESCAPE '\\\\'`;
     }
 
+    regex(expr: string, pattern: string, insensitive: boolean): string {
+        return `REGEXP_LIKE(${expr}, ${pattern}, '${insensitive ? 'i' : 'c'}')`;
+    }
+
     isBoolean(expr: string, value: boolean): string {
         return `${expr} = ${value ? 1 : 0}`;
     }

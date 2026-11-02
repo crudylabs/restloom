@@ -37,6 +37,10 @@ function condition(resource: Resource, segs: Segment[], expr: string, limits: Li
         const items = listItems(raw);
         if (items.length === 0 || items.length > limits.inList) throw badRequest('bad_list', col.name);
         value = items.map((i) => typed(i, col.type, col.name));
+    } else if (op === 'ov' || op === 'cs' || op === 'cd') {
+        const items = listItems(raw, '{', '}');
+        if (items.length > limits.inList) throw badRequest('bad_list', col.name);
+        value = items;
     } else if (op === 'is') {
         value = raw === 'null' ? null : raw === 'true';
     } else if (op === 'like' || op === 'ilike') {

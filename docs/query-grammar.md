@@ -92,6 +92,8 @@ A filter is `column=operator.value`. Every filter must hold.
 | `gt`, `gte`, `lt`, `lte` | greater or less than | text, numbers, dates and times |
 | `in.(a,b,c)` | one of the list; quote an item holding a comma: `in.("a,b",c)` | any comparable column |
 | `like`, `ilike` | pattern, `*` for any text; `ilike` ignores case | text |
+| `match`, `imatch` | regular expression; `imatch` ignores case | text, where the database has them (Postgres, MySQL) |
+| `ov.{a,b}`, `cs.{a,b}`, `cd.{a,b}` | the array overlaps, contains, or is contained by the list | array columns (Postgres) |
 | `is.null`, `is.true`, `is.false` | null, or a boolean value | `null` any column, `true` and `false` booleans |
 
 `not.` before the operator negates it: `status=not.in.(retired,lost)`.

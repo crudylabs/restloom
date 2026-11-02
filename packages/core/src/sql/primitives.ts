@@ -50,6 +50,16 @@ export class SqlPrimitives {
         return `${expr} ${insensitive ? 'ILIKE' : 'LIKE'} ${pattern} ESCAPE '\\'`;
     }
 
+    /** A POSIX regular expression match; a dialect without one refuses with `unsupported`. */
+    regex(expr: string, pattern: string, insensitive: boolean): string {
+        return `${expr} ${insensitive ? '~*' : '~'} ${pattern}`;
+    }
+
+    /** Array overlap (ov), contains (cs) or contained by (cd); only Postgres has array columns. */
+    arrayCompare(expr: string, op: 'ov' | 'cs' | 'cd', array: string): string {
+        return `${expr} ${op === 'ov' ? '&&' : op === 'cs' ? '@>' : '<@'} ${array}`;
+    }
+
     isBoolean(expr: string, value: boolean): string {
         return `${expr} IS ${value ? 'TRUE' : 'FALSE'}`;
     }

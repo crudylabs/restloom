@@ -10,8 +10,8 @@ export function splitTopLevel(input: string): string[] {
         const c = input[i];
         if (c === '\\' && quoted) { i++; continue; }
         if (c === '"') quoted = !quoted;
-        else if (!quoted && c === '(') depth++;
-        else if (!quoted && c === ')') depth--;
+        else if (!quoted && (c === '(' || c === '{')) depth++;
+        else if (!quoted && (c === ')' || c === '}')) depth--;
         else if (!quoted && depth === 0 && c === ',') { out.push(input.slice(start, i)); start = i + 1; }
         if (depth < 0) throw badRequest('bad_syntax', input);
     }
@@ -27,9 +27,9 @@ export function unquote(item: string): string {
     return t;
 }
 
-/** `(a,b,"c,d")` into its items. */
-export function listItems(value: string): string[] {
-    if (!value.startsWith('(') || !value.endsWith(')')) throw badRequest('bad_list', value);
+/** `(a,b,"c,d")`, or `{a,b}` for an array, into its items. */
+export function listItems(value: string, open = '(', close = ')'): string[] {
+    if (!value.startsWith(open) || !value.endsWith(close)) throw badRequest('bad_list', value);
     const inner = value.slice(1, -1);
     return inner.trim() === '' ? [] : splitTopLevel(inner).map(unquote);
 }

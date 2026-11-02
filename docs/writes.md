@@ -160,7 +160,9 @@ POST /incidents
 
 ## Procedures
 
-A procedure calls a database function at a path you choose. A `{name}` in the path passes that segment as the argument of the same name; the body's keys pass the others. Arguments are checked by name and type, and one with a default may be left out. A procedure is always a POST.
+A procedure calls a database function at a path you choose. A `{name}` in the path passes that segment as the argument of the same name; the body's keys pass the others. Arguments are checked by name and type, and one with a default may be left out.
+
+A procedure is a POST unless declared `method: 'GET'`. A GET procedure takes its arguments from the query string (`/search?q=vpn&limit=10`), each once, and runs in a read-only transaction: use it for a function without side effects.
 
 ```http
 POST /assets/3/retire

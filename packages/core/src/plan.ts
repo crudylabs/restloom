@@ -1,6 +1,6 @@
 import type { Relation, Resource } from './resources.js';
 
-export const OPERATORS = ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'like', 'ilike', 'in', 'is'] as const;
+export const OPERATORS = ['eq', 'neq', 'gt', 'gte', 'lt', 'lte', 'like', 'ilike', 'match', 'imatch', 'in', 'is', 'ov', 'cs', 'cd'] as const;
 export type Operator = typeof OPERATORS[number];
 
 export const AGGREGATES = ['count', 'sum', 'avg', 'min', 'max'] as const;

@@ -34,3 +34,13 @@ for (const page of PAGES) {
         }
     });
 }
+
+describe('mysql regular expressions', { skip: !url && 'RESTLOOM_MYSQL_URL is not set' }, () => {
+    test('imatch ignores case, match does not', async () => {
+        await admin.query(fixture);
+        const rest = createREST({ db: mysql(pool), expose: { schemas: ['demo'] } });
+        const get = async (qs) => (await rest.handle({ method: 'GET', path: '/users', query: new URLSearchParams(qs), headers: {}, context: undefined })).body;
+        assert.deepEqual(await get('select=id&name=imatch.^(ada|LINUS)$'), [{ id: 1 }, { id: 3 }]);
+        assert.deepEqual(await get('select=id&name=match.^(ada|LINUS)$'), []);
+    });
+});

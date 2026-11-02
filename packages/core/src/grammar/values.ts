@@ -8,7 +8,8 @@ const ORDERED: ReadonlySet<LogicalType> = new Set(['text', 'integer', 'number', 
 /** Whether an operator applies to a column of this type, decided before any SQL. */
 export function operatorFits(op: Operator, type: LogicalType, value: string): boolean {
     if (op === 'is') return value === 'null' || (type === 'boolean' && (value === 'true' || value === 'false'));
-    if (op === 'like' || op === 'ilike') return type === 'text';
+    if (op === 'like' || op === 'ilike' || op === 'match' || op === 'imatch') return type === 'text';
+    if (op === 'ov' || op === 'cs' || op === 'cd') return type === 'array';
     if (op === 'gt' || op === 'gte' || op === 'lt' || op === 'lte') return ORDERED.has(type);
     return COMPARABLE.has(type);
 }

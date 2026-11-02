@@ -52,6 +52,12 @@ export interface ResourceOptions {
 export interface ProcedureOptions {
     /** Schema-qualified function name. */
     function: string;
+    /**
+     * POST (default) takes arguments from the body. GET takes them from the
+     * query string and runs read-only: use it for a function without side
+     * effects, such as a search.
+     */
+    method?: 'GET' | 'POST';
 }
 
 export interface RestRequest<C = unknown> {

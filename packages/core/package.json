@@ -1,6 +1,6 @@
 {
   "name": "@crudy/restloom",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "description": "A REST API generated from your database's catalog: discovery, a curl-friendly query grammar, relations of every kind, safe defaults",
   "keywords": ["rest", "api", "postgrest", "sql", "database", "crud", "generator"],

@@ -1,4 +1,4 @@
-import { SqlRenderer, type CatalogColumn } from '@crudy/restloom';
+import { RestError, SqlRenderer, type CatalogColumn } from '@crudy/restloom';
 
 /** SQLite: JSON through json_object and json_group_array, booleans as 0 and 1, positional placeholders. */
 export class SqliteRenderer extends SqlRenderer {
@@ -26,6 +26,10 @@ export class SqliteRenderer extends SqlRenderer {
 
     like(expr: string, pattern: string, insensitive: boolean): string {
         return insensitive ? `lower(${expr}) LIKE lower(${pattern}) ESCAPE '\\'` : `${expr} LIKE ${pattern} ESCAPE '\\'`;
+    }
+
+    regex(): string {
+        throw new RestError(400, 'unsupported', 'regular expressions');
     }
 
     isBoolean(expr: string, value: boolean): string {

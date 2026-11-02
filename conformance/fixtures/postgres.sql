@@ -66,3 +66,10 @@ CREATE FUNCTION demo.assets_tagged(tag text) RETURNS SETOF demo.assets
     LANGUAGE sql STABLE AS $$
         SELECT a.* FROM demo.assets a JOIN demo.asset_tags t ON t.asset_id = a.id JOIN demo.tags g ON g.id = t.tag_id
         WHERE g.name = tag ORDER BY a.id $$;
+
+CREATE TABLE demo.notes (
+    id integer PRIMARY KEY,
+    labels text[] NOT NULL
+);
+
+INSERT INTO demo.notes (id, labels) VALUES (1, '{a,b}'), (2, '{b,c}'), (3, '{z}');

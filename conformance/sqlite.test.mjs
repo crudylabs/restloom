@@ -26,3 +26,14 @@ for (const page of PAGES) {
         }
     });
 }
+
+describe('sqlite refuses what it cannot do', () => {
+    test('a regular expression answers unsupported', async () => {
+        const db = new Database(':memory:');
+        db.exec("ATTACH ':memory:' AS demo");
+        db.exec(fixture);
+        const rest = createREST({ db: sqlite(db), expose: { schemas: ['demo'] } });
+        const res = await rest.handle({ method: 'GET', path: '/users', query: new URLSearchParams('name=imatch.a'), headers: {}, context: undefined });
+        assert.deepEqual(res.body, { error: 'unsupported', message: 'regular expressions' });
+    });
+});

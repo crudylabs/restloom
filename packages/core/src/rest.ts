@@ -1,7 +1,7 @@
 import type { Catalog } from './catalog.js';
 import { RestError, notFound } from './errors.js';
 import { DEFAULT_LIMITS, type Limits, type RestOptions, type RestRequest, type RestResponse } from './options.js';
-import { buildProcedures, matchProcedure, procedureArgs, type Procedure } from './procedures.js';
+import { buildProcedures, matchProcedure, procedureArgs, queryArgs, type Procedure } from './procedures.js';
 import { readRows } from './read.js';
 import { buildResources, type Resource } from './resources.js';
 import { scopeFilters } from './scope.js';
@@ -63,10 +63,11 @@ export function createREST<C = unknown>(options: RestOptions<C>): Rest<C> {
         const scope = scopeFilters(options, request.context);
         const call = matchProcedure(api.procedures, request.path);
         if (call) {
-            if (request.method !== 'POST') throw new RestError(405, 'method_not_allowed');
+            const { method, fn } = call.procedure;
+            if (request.method !== method) throw new RestError(405, 'method_not_allowed');
             await options.hooks?.authorize?.(request, { procedure: call.procedure.template, action: 'call' });
-            const args = procedureArgs(call.procedure.fn, call.values, request.body);
-            return inTransaction(request, false, async (tx) => {
+            const args = procedureArgs(fn, call.values, method === 'GET' ? queryArgs(fn, request.query) : request.body);
+            return inTransaction(request, method === 'GET', async (tx) => {
                 const stmt = db.renderer.call(call.procedure.fn, args, db.renderer.context(scope));
                 const rows = (await tx.query(stmt.sql, stmt.params)).map((row) => db.decode(row.r));
                 return { status: 200, headers: {}, body: call.procedure.fn.returnsSet ? rows : rows[0] ?? null };
