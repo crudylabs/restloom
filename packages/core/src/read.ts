@@ -32,8 +32,9 @@ export function keyFilter(resource: Resource, id: string): Filter {
 
 /** GET on a collection, or on one row when id is given. */
 export async function readRows(db: Dialect, tx: Tx, resource: Resource, request: RestRequest<unknown>, limits: Limits,
-    scope: (r: Resource) => Filter[], id?: string): Promise<RestResponse> {
+    scope: (r: Resource) => Filter[], id?: string, extra: Filter[] = []): Promise<RestResponse> {
     const plan = parseRead(resource, request.query, limits);
+    plan.where.push(...extra);
     if (id !== undefined) {
         plan.where.unshift(keyFilter(resource, id));
         plan.limit = 1;

@@ -25,6 +25,8 @@ Your backend stays in charge:
 |---|---|
 | `@crudy/restloom` | The core: grammar, discovery, `createREST`, a Node `http` listener |
 | `@crudy/restloom-postgres` | PostgreSQL |
+| `@crudy/restloom-fastify` | Fastify plugin |
+| `@crudy/restloom-express` | Express handler |
 
 ```sh
 npm install @crudy/restloom @crudy/restloom-postgres pg
@@ -49,7 +51,17 @@ http.createServer(nodeListener(rest)).listen(3000);
 
 ## Documentation
 
-- [Query grammar](docs/query-grammar.md): select, filters, relations, order, pages, counts, aggregates.
+1. [Getting started](docs/getting-started.md)
+2. [Discovery and overrides](docs/discovery.md): what becomes a resource, hidden columns, relation names.
+3. [Query grammar](docs/query-grammar.md): select, filters, relations, order, pages, counts, aggregates.
+4. [Writes and procedures](docs/writes.md)
+5. [Security and hooks](docs/security.md)
+6. [Adapters](docs/adapters.md): Node, Fastify, Express, your own routes.
+7. [Dialects](docs/dialects.md) and [writing a dialect](docs/writing-a-dialect.md)
+8. [Errors](docs/errors.md)
+9. [Compared with PostgREST](docs/postgrest.md)
+
+The examples in the grammar and writes pages are the conformance suite: each one runs against every database and must answer exactly what the page shows.
 
 ## Licence
 

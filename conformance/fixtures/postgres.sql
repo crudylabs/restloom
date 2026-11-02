@@ -58,3 +58,11 @@ INSERT INTO demo.incidents (id, title, asset_id, severity, opened_on) VALUES
     (1, 'VPN outage', 1, 3, '2026-01-10'),
     (2, 'Spoofed mail', 2, 2, '2026-02-01'),
     (3, 'Brute force', 1, 4, '2026-03-05');
+
+CREATE FUNCTION demo.retire_asset(asset integer, reason text DEFAULT NULL) RETURNS integer
+    LANGUAGE sql AS $$ UPDATE demo.assets SET status = 'retired' WHERE id = asset RETURNING id $$;
+
+CREATE FUNCTION demo.assets_tagged(tag text) RETURNS SETOF demo.assets
+    LANGUAGE sql STABLE AS $$
+        SELECT a.* FROM demo.assets a JOIN demo.asset_tags t ON t.asset_id = a.id JOIN demo.tags g ON g.id = t.tag_id
+        WHERE g.name = tag ORDER BY a.id $$;

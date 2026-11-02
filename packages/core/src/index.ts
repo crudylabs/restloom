@@ -8,5 +8,6 @@ export type { Catalog, CatalogColumn, CatalogForeignKey, CatalogFunction, Catalo
 export type { Column, Junction, Relation, Resource } from './resources.js';
 export type { Aggregate, Embed, Filter, Operator, OrderTerm, Path, ReadPlan, Selection, Value } from './plan.js';
 export { SqlPrimitives } from './sql/primitives.js';
+export { SqlReader } from './sql/reader.js';
 export { SqlRenderer, type Statement } from './sql/renderer.js';
 export { RenderContext } from './sql/context.js';

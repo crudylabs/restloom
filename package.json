@@ -4,7 +4,9 @@
   "type": "module",
   "workspaces": [
     "packages/core",
-    "packages/postgres"
+    "packages/postgres",
+    "packages/fastify",
+    "packages/express"
   ],
   "engines": {
     "node": ">=20"
