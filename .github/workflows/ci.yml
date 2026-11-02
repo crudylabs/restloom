@@ -1,5 +1,6 @@
 # Builds every package and runs the unit tests and the conformance suite
-# against each database. The organisation only allows its own actions, so
+# against Postgres, MySQL and SQLite. SQL Server runs locally only: its
+# image needs its licence accepted, which stays the maintainer's decision. The organisation only allows its own actions, so
 # checkout and Node setup are plain shell; databases are service containers.
 name: ci
 
@@ -17,6 +18,7 @@ jobs:
     env:
       NODE_VERSION: v24.12.0
       RESTLOOM_PG_URL: postgres://postgres@localhost:5432/postgres
+      RESTLOOM_MYSQL_URL: mysql://root@127.0.0.1:3306
     services:
       postgres:
         image: postgres:17-alpine
@@ -25,6 +27,13 @@ jobs:
         ports: ['5432:5432']
         options: >-
           --health-cmd "pg_isready -U postgres" --health-interval 2s --health-timeout 2s --health-retries 30
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd "mysqladmin ping -uroot" --health-interval 3s --health-timeout 3s --health-retries 40
     steps:
       - name: Check out
         run: |

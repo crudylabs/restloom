@@ -11,4 +11,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Writes: create, update and delete by key, bulk by filter where enabled, scope applied, rows read back with `Prefer: return=representation`.
 - Procedures: database functions at declared paths, arguments checked by name and type.
 - `@crudy/restloom-postgres`: the Postgres dialect.
+- `@crudy/restloom-mysql`, `@crudy/restloom-mssql` and `@crudy/restloom-sqlite`: MySQL 8, SQL Server 2022 and SQLite dialects, each passing the conformance suite.
 - `@crudy/restloom-fastify` and `@crudy/restloom-express`: framework adapters.

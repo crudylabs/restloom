@@ -47,6 +47,34 @@ async function readBack(c: WriteContext, keys: Record<string, unknown>[], status
     return { status, headers: {}, body: read.body };
 }
 
+/**
+ * Runs an update or delete and returns the keys it reached. A database
+ * without RETURNING locks and reads the keys first, then writes by key, which
+ * also keeps it from reading the table it is changing.
+ */
+async function writeByKeys(c: WriteContext, where: Filter[], write: (where: Filter[]) => { sql: string; params: unknown[] }): Promise<Record<string, unknown>[]> {
+    if (c.db.capabilities.returning) {
+        const stmt = write(where);
+        return c.tx.query(stmt.sql, stmt.params);
+    }
+    const sel = c.db.renderer.selectKeys(c.resource, where, c.db.renderer.context(c.scope));
+    const keys = await c.tx.query(sel.sql, sel.params);
+    if (keys.length === 0) return keys;
+    const stmt = write([keysFilter(c.resource, keys)]);
+    await c.tx.query(stmt.sql, stmt.params);
+    return keys;
+}
+
+/** The keys of inserted rows: returned by the database, given in the body, or generated in sequence. */
+async function insertedKeys(c: WriteContext, returned: Record<string, unknown>[], columns: string[], values: unknown[][]): Promise<Record<string, unknown>[]> {
+    if (c.db.capabilities.returning) return returned;
+    const key = c.resource.key;
+    if (key.every((k) => columns.includes(k))) return values.map((row) => Object.fromEntries(key.map((k) => [k, row[columns.indexOf(k)]])));
+    if (key.length !== 1) return [];
+    const [first] = await c.tx.query(c.db.renderer.lastInsertId(), []);
+    return values.map((_, i) => ({ [key[0]]: Number(first.id) + i }));
+}
+
 /** The filters a PATCH or DELETE applies: the id, or the query's filters on a bulk-enabled resource. */
 function target(c: WriteContext, id: string | undefined): Filter[] {
     if (id !== undefined) return [keyFilter(c.resource, id)];
@@ -66,7 +94,7 @@ export async function create(c: WriteContext): Promise<RestResponse> {
         return scope.has(col) ? scope.get(col) : row.get(col);
     }));
     const stmt = c.db.renderer.insert(c.resource, columns, values, c.db.renderer.context(c.scope));
-    const keys = await c.tx.query(stmt.sql, stmt.params);
+    const keys = await insertedKeys(c, await c.tx.query(stmt.sql, stmt.params), columns, values);
     return wantsRows(c.request) ? readBack(c, keys, 201) : { status: 201, headers: {}, body: undefined };
 }
 
@@ -76,8 +104,7 @@ export async function update(c: WriteContext, id: string | undefined): Promise<R
     const scope = pinned(c);
     for (const [col, v] of row) if (scope.has(col) && v !== scope.get(col)) throw new RestError(403, 'out_of_scope', col);
     const where = [...c.scope(c.resource), ...target(c, id)];
-    const stmt = c.db.renderer.update(c.resource, [...row], where, c.db.renderer.context(c.scope));
-    const keys = await c.tx.query(stmt.sql, stmt.params);
+    const keys = await writeByKeys(c, where, (w) => c.db.renderer.update(c.resource, [...row], w, c.db.renderer.context(c.scope)));
     if (id !== undefined && keys.length === 0) throw notFound();
     if (!wantsRows(c.request)) return { status: 204, headers: {}, body: undefined };
     const back = await readBack(c, keys, 200);
@@ -90,8 +117,7 @@ export async function remove(c: WriteContext, id: string | undefined): Promise<R
     const before = wantsRows(c.request)
         ? await readRows(c.db, c.tx, c.resource, { ...c.request, query: selectOnly(c.request, c.limits.maxPage) }, c.limits, c.scope, undefined, where)
         : null;
-    const stmt = c.db.renderer.delete(c.resource, where, c.db.renderer.context(c.scope));
-    const keys = await c.tx.query(stmt.sql, stmt.params);
+    const keys = await writeByKeys(c, where, (w) => c.db.renderer.delete(c.resource, w, c.db.renderer.context(c.scope)));
     if (id !== undefined && keys.length === 0) throw notFound();
     if (!before) return { status: 204, headers: {}, body: undefined };
     return { status: 200, headers: {}, body: id !== undefined ? (before.body as unknown[])[0] : before.body };

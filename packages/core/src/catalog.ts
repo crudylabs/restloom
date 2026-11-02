@@ -37,6 +37,8 @@ export interface CatalogFunction {
     name: string;
     args: { name: string; type: LogicalType; nativeType: string; hasDefault: boolean }[];
     returnsSet: boolean;
+    /** The columns of each returned row, when the dialect can read them. */
+    columns?: CatalogColumn[];
 }
 
 export interface Catalog {

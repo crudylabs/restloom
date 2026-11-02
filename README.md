@@ -25,6 +25,9 @@ Your backend stays in charge:
 |---|---|
 | `@crudy/restloom` | The core: grammar, discovery, `createREST`, a Node `http` listener |
 | `@crudy/restloom-postgres` | PostgreSQL |
+| `@crudy/restloom-mysql` | MySQL |
+| `@crudy/restloom-mssql` | SQL Server |
+| `@crudy/restloom-sqlite` | SQLite |
 | `@crudy/restloom-fastify` | Fastify plugin |
 | `@crudy/restloom-express` | Express handler |
 

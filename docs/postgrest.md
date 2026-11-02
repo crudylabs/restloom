@@ -5,7 +5,7 @@ restloom keeps what makes PostgREST pleasant, the catalog as the source and a qu
 | | PostgREST | restloom |
 |---|---|---|
 | Runs as | a separate server | a library inside your backend |
-| Databases | PostgreSQL | PostgreSQL; more through dialects |
+| Databases | PostgreSQL | PostgreSQL, MySQL, SQL Server, SQLite |
 | What is served | everything the role can reach in the schema | what you name in `expose`, minus hidden columns |
 | Sensitive columns | served unless the role cannot read them | hidden by name unless shown |
 | Writes | everything the role may write | off until a resource enables them, by column |

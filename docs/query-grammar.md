@@ -173,6 +173,15 @@ GET /assets?select=id&or=(status.eq.retired,owner.name.eq.Linus)
 - **To-one paths:** sort by a related column: `order=owner.name.desc`.
 - **To-many relations:** sort by how many related rows each row has: `order=incidents.count.desc`. A to-many relation cannot be sorted by one of its columns, because a row has many values.
 - **Stable pages:** the key is appended to every order.
+- **Nulls:** they sort last ascending and first descending, as in Postgres, on every database.
+
+```http
+GET /assets?select=id,cost&order=cost.desc
+```
+
+```json
+[{ "id": 3, "cost": null }, { "id": 4, "cost": 4000 }, { "id": 1, "cost": 1200.5 }, { "id": 2, "cost": 300 }]
+```
 
 ## Pages and counts
 

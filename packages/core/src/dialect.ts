@@ -15,6 +15,8 @@ export interface Capabilities {
     estimatedCount: boolean;
     /** Row security enforced by the database for the session's role. */
     rowSecurity: boolean;
+    /** Database functions can be called as procedures. */
+    procedures: boolean;
 }
 
 export interface Dialect {
@@ -25,6 +27,8 @@ export interface Dialect {
     introspect(scope: { schemas: string[]; tables: string[] }): Promise<Catalog>;
     /** Runs fn in one transaction with a statement timeout; read-only when asked. */
     transaction<T>(fn: (tx: Tx) => Promise<T>, options: { timeoutMs: number; readOnly: boolean }): Promise<T>;
+    /** The JSON value of a statement's `r` column as a JavaScript value: drivers that parse JSON return it as is, others parse text. */
+    decode(value: unknown): unknown;
     /** A database error the client caused, as a RestError; null for anything else, which stays a 500. */
     mapError(err: unknown): RestError | null;
     /** The planner's row estimate for a count query, when estimatedCount is supported. */

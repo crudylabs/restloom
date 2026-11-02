@@ -11,6 +11,9 @@ npm install @crudy/restloom @crudy/restloom-postgres pg
 | Database | Package | Driver |
 |---|---|---|
 | PostgreSQL 13+ | `@crudy/restloom-postgres` | `pg` |
+| MySQL 8.0+ | `@crudy/restloom-mysql` | `mysql2` |
+| SQL Server 2022+ | `@crudy/restloom-mssql` | `mssql` |
+| SQLite 3.44+ | `@crudy/restloom-sqlite` | `better-sqlite3` |
 
 ## Serve a schema
 

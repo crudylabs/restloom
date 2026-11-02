@@ -5,6 +5,9 @@
   "workspaces": [
     "packages/core",
     "packages/postgres",
+    "packages/sqlite",
+    "packages/mysql",
+    "packages/mssql",
     "packages/fastify",
     "packages/express"
   ],
@@ -15,5 +18,8 @@
     "build": "npm run build --workspaces --if-present",
     "test": "npm run build && node --test 'packages/*/test/*.test.mjs' 'conformance/*.test.mjs'",
     "check": "npm run build && npm test"
+  },
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true
   }
 }

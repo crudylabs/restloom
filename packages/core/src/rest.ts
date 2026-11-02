@@ -67,7 +67,7 @@ export function createREST<C = unknown>(options: RestOptions<C>): Rest<C> {
             const args = procedureArgs(call.procedure.fn, call.values, request.body);
             return inTransaction(request, false, async (tx) => {
                 const stmt = db.renderer.call(call.procedure.fn, args, db.renderer.context(scope));
-                const rows = (await tx.query(stmt.sql, stmt.params)).map((r) => (typeof r.r === 'string' ? JSON.parse(r.r) : r.r));
+                const rows = (await tx.query(stmt.sql, stmt.params)).map((row) => db.decode(row.r));
                 return { status: 200, headers: {}, body: call.procedure.fn.returnsSet ? rows : rows[0] ?? null };
             });
         }

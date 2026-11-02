@@ -1,0 +1,50 @@
+{
+  "name": "@crudy/restloom-sqlite",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "SQLite dialect for restloom",
+  "keywords": [
+    "restloom",
+    "sqlite",
+    "rest",
+    "api"
+  ],
+  "author": "Marc Villain",
+  "homepage": "https://restloom.crudy.fr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crudylabs/restloom.git",
+    "directory": "packages/sqlite"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@crudy/restloom": "^0.1.0"
+  },
+  "peerDependencies": {
+    "better-sqlite3": ">=12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/better-sqlite3": "^7.6.0",
+    "better-sqlite3": "^12.11.1",
+    "typescript": "^5.9.0"
+  }
+}

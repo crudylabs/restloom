@@ -5,7 +5,7 @@ import { createRequire } from 'node:module';
 import { createREST } from '../packages/core/dist/index.js';
 import { postgres } from '../packages/postgres/dist/index.js';
 import { examples, run } from './examples.mjs';
-import { PAGES, OPTIONS } from './pages.mjs';
+import { PAGES, optionsFor } from './pages.mjs';
 
 const require = createRequire(new URL('../packages/postgres/package.json', import.meta.url));
 const { Pool } = require('pg');
@@ -21,7 +21,8 @@ for (const page of PAGES) {
         let rest;
         before(async () => {
             await pool.query(fixture);
-            rest = createREST({ db: postgres(pool), ...OPTIONS });
+            const dialect = postgres(pool);
+            rest = createREST({ db: dialect, ...optionsFor(dialect) });
         });
         for (const example of examples(new URL(`../docs/${page}`, import.meta.url).pathname)) {
             test(example.name, () => run(rest, example, assert));

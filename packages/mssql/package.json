@@ -1,0 +1,51 @@
+{
+  "name": "@crudy/restloom-mssql",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "SQL Server dialect for restloom",
+  "keywords": [
+    "restloom",
+    "mssql",
+    "sql-server",
+    "rest",
+    "api"
+  ],
+  "author": "Marc Villain",
+  "homepage": "https://restloom.crudy.fr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crudylabs/restloom.git",
+    "directory": "packages/mssql"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@crudy/restloom": "^0.1.0"
+  },
+  "peerDependencies": {
+    "mssql": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/mssql": "^12.0.0",
+    "mssql": "12.7.10",
+    "typescript": "^5.9.0"
+  }
+}

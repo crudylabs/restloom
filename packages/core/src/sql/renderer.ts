@@ -22,6 +22,19 @@ export class SqlRenderer extends SqlReader {
         return ctx.params.finalize(sql, (i) => this.placeholder(i));
     }
 
+    /** For databases without RETURNING: the keys a write will reach, locked until the transaction ends. */
+    selectKeys(resource: Resource, where: Filter[], ctx: RenderContext): Statement {
+        const alias = ctx.alias();
+        const conditions = this.filters(resource, alias, where, ctx);
+        const sql = `SELECT ${resource.key.map((k) => `${this.column(alias, k)} AS ${this.quote(k)}`).join(', ')} FROM ${this.table(resource.schema, resource.table)} ${alias}${conditions.length ? ` WHERE ${conditions.join(' AND ')}` : ''} FOR UPDATE`;
+        return ctx.params.finalize(sql, (i) => this.placeholder(i));
+    }
+
+    /** For databases without RETURNING: the first generated key of the last insert, as `id`. */
+    lastInsertId(): string {
+        return 'SELECT LAST_INSERT_ID() AS id';
+    }
+
     writeTarget(resource: Resource, alias: string): string {
         return `${this.table(resource.schema, resource.table)} AS ${alias}`;
     }

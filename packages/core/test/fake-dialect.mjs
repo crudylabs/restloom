@@ -6,7 +6,8 @@ export function fakeDialect(rows = [{ id: 1, name: 'one' }]) {
     return {
         statements,
         name: 'fake',
-        capabilities: { returning: true, estimatedCount: false, rowSecurity: false },
+        capabilities: { returning: true, estimatedCount: false, rowSecurity: false, procedures: false },
+        decode: (v) => v,
         renderer: new SqlRenderer(),
         async introspect() {
             const col = (name, type) => ({ name, type, nativeType: type, nullable: false, generated: false });

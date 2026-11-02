@@ -20,7 +20,8 @@ export interface PostgresOptions {
 export function postgres(pool: Pool, options: PostgresOptions = {}): Dialect {
     return {
         name: 'postgres',
-        capabilities: { returning: true, estimatedCount: true, rowSecurity: true },
+        capabilities: { returning: true, estimatedCount: true, rowSecurity: true, procedures: true },
+        decode: (value) => value,
         renderer: options.renderer ?? new PostgresRenderer(),
         introspect: (scope) => introspect(pool, scope),
         async transaction(fn, { timeoutMs, readOnly }) {
