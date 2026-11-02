@@ -5,8 +5,9 @@ A dialect implements one interface:
 ```ts
 interface Dialect {
     name: string;
-    capabilities: { returning: boolean; estimatedCount: boolean; rowSecurity: boolean };
+    capabilities: { returning: boolean; estimatedCount: boolean; rowSecurity: boolean; procedures: boolean };
     renderer: SqlRenderer;
+    decode(value: unknown): unknown;
     introspect(scope: { schemas: string[]; tables: string[] }): Promise<Catalog>;
     transaction<T>(fn: (tx: Tx) => Promise<T>, options: { timeoutMs: number; readOnly: boolean }): Promise<T>;
     mapError(err: unknown): RestError | null;
@@ -19,6 +20,8 @@ interface Dialect {
 | `introspect` | reads tables, views, columns, primary keys, foreign keys and functions, and maps each type to a logical one: `text`, `integer`, `number`, `boolean`, `uuid`, `date`, `timestamp`, `time`, `json`, `binary`, `array` or `other` |
 | `transaction` | runs a request's statements in one transaction with a statement timeout |
 | `mapError` | turns an error the client caused into a stable code; anything else returns `null` and answers `internal` |
+| `decode` | reads the JSON a statement returns: drivers that parse JSON return it as is, others parse text |
+| `capabilities.returning` | `false` makes the core lock and read the keys of an update or delete first, and take an insert's keys from the body or `lastInsertId()` |
 | `renderer` | writes the SQL |
 
 The core decides everything else from the logical types: which operators a column accepts, which values are valid, which columns can be summed.
@@ -44,8 +47,10 @@ The core decides everything else from the logical types: which operators a colum
 | `returning(resource)` | `RETURNING key` |
 | `writeTarget(resource, alias)` | `table AS alias` |
 | `call(fn, args)` | `SELECT to_json(fn(arg => $1))` |
+| `selectKeys(resource, where)` | `SELECT key ... FOR UPDATE`, without RETURNING only |
+| `lastInsertId()` | `SELECT LAST_INSERT_ID() AS id`, without RETURNING only |
 
-Larger units can be overridden too: `relationSource`, `exists`, `filter`, `embed`, `read`, `count`, `insert`, `update`, `delete`.
+Larger units can be overridden too: `relationSource`, `exists`, `filter`, `order`, `embed`, `read`, `count`, `insert`, `update`, `delete`. The four dialects in this repository are the worked examples: SQL Server overrides the most.
 
 Placeholders are written last: fragments carry internal tokens, and the final text gets the database's own placeholders in text order. A dialect with positional placeholders (`?`) gets its values in the right order whatever order the fragments were built in.
 
