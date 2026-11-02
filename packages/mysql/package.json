@@ -1,6 +1,6 @@
 {
   "name": "@crudy/restloom-mysql",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "description": "MySQL dialect for restloom",
   "keywords": [
@@ -40,6 +40,9 @@
   },
   "peerDependencies": {
     "mysql2": "^3.11.0"
+  },
+  "peerDependenciesMeta": {
+    "mysql2": { "optional": true }
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

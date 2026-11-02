@@ -13,7 +13,7 @@ A message never contains SQL or database text.
 | Code | Status | Means |
 |---|---|---|
 | `not_found` | 404 | no such resource, or no such row, or a row you may not see |
-| `method_not_allowed` | 405 | the resource does not allow this method, or a procedure was not called with POST |
+| `method_not_allowed` | 405 | the resource does not allow this method, or a procedure was called with another method than its own |
 | `unknown_column` | 400 | the column does not exist or is hidden |
 | `unknown_relation` | 400 | the relation does not exist |
 | `unknown_operator` | 400 | the operator is not one of `eq neq gt gte lt lte in like ilike match imatch is ov cs cd` |

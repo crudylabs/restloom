@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-11-03
+
+### Changed
+- Each dialect's driver (`pg`, `mysql2`, `mssql`, `better-sqlite3`) is an optional peer dependency: you pass the driver object in, so npm no longer installs one you did not choose. A dialect works with any object offering the driver's API, the SQLite one with sql.js in a browser for example.
+- The docs use a to-do app as their example schema.
+
 ## [0.3.0] - 2026-11-02
 
 ### Added
