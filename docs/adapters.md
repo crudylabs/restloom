@@ -9,13 +9,25 @@ const response = await rest.handle({ method, path, query, headers, body, context
 
 `handle` never throws: every failure is a response. `path` is the path below where the API is mounted (`/todos/4`), `query` a `URLSearchParams`, `body` the parsed JSON.
 
-## Node
+## Node, without a framework
 
-`nodeListener` from the core serves `node:http` with no other dependency. It reads JSON bodies up to 1 MiB (`maxBodyBytes`).
+`nodeListener` from the core serves `node:http` with nothing else installed. It mounts the API under `prefix` and answers `404 not_found` outside it, reads JSON bodies up to 1 MiB (`maxBodyBytes`), and builds each request's context with `context`:
 
 ```ts
-http.createServer(nodeListener(rest, { prefix: '/api', context: (req) => userFrom(req) })).listen(3000);
+import http from 'node:http';
+import { createREST, nodeListener } from '@crudy/restloom';
+
+const api = nodeListener(rest, { prefix: '/api', context: (req) => userFrom(req) });
+http.createServer(api).listen(3000);
 ```
+
+To serve other pages from the same server, hand only the API's paths to it:
+
+```ts
+http.createServer((req, res) => (req.url?.startsWith('/api/') ? api(req, res) : site(req, res))).listen(3000);
+```
+
+Without HTTP at all, call `rest.handle` directly: [From your own code](#from-your-own-code).
 
 ## Fastify
 
