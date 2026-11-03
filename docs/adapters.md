@@ -3,12 +3,10 @@
 The core answers a plain request object, so it fits any framework:
 
 ```ts
-import pg from 'pg';
-import { createREST } from '@crudy/restloom';
-import { postgres } from '@crudy/restloom-postgres';
+import { createREST, postgres } from '@crudy/restloom-postgres';
 
 const rest = createREST({
-    db: postgres(new pg.Pool({ connectionString: process.env.DATABASE_URL })),
+    db: postgres(process.env.DATABASE_URL),
     expose: { schemas: ['app'] },
 });
 
@@ -22,11 +20,11 @@ The examples below use this `rest`.
 
 ## Node, without a framework
 
-`nodeListener` from the core serves `node:http` with nothing else installed. It mounts the API under `prefix` and answers `404 not_found` outside it, reads JSON bodies up to 1 MiB (`maxBodyBytes`), and builds each request's context with `context`:
+`nodeListener` from the core serves `node:http` with nothing else installed. It mounts the API under `prefix` and answers `404 not_found` outside it, reads JSON bodies up to 1 MiB (`maxBodyBytes`), and builds each request's context with `context`. A `context` that throws a `RestError` refuses the request with it; any other error answers `500 internal`:
 
 ```ts
 import http from 'node:http';
-import { nodeListener } from '@crudy/restloom';
+import { nodeListener } from '@crudy/restloom-postgres';
 
 const api = nodeListener(rest, { prefix: '/api', context: (req) => userFrom(req) });
 http.createServer(api).listen(3000);

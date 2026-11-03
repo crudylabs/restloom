@@ -52,7 +52,7 @@ resources: {
 `sensitive` replaces the whole pattern, for every resource. Start from `DEFAULT_SENSITIVE` to add words rather than lose the defaults:
 
 ```ts
-import { createREST, DEFAULT_SENSITIVE } from '@crudy/restloom';
+import { createREST, DEFAULT_SENSITIVE } from '@crudy/restloom-postgres';
 
 createREST({
     db, // from a database package, see Dialects
@@ -64,7 +64,7 @@ createREST({
 ## Hooks
 
 ```ts
-import { createREST, RestError } from '@crudy/restloom';
+import { createREST, RestError } from '@crudy/restloom-postgres';
 
 createREST({
     db, // from a database package, see Dialects

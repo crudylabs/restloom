@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-03
+
+### Added
+- Every database package exports the whole core, so one install and one import are enough: `import { createREST, nodeListener, postgres } from '@crudy/restloom-postgres'`.
+- `postgres`, `mysql` and `mssql` take a connection URL or the driver's pool options and open the pool themselves; a pool you already have still works.
+
+### Changed
+- `pg`, `mysql2` and `mssql` are dependencies of their packages again, installed with them. `better-sqlite3` stays an optional peer of the SQLite package, which also runs on sql.js in a browser.
+
+### Fixed
+- A `nodeListener` context that throws answers the request, with the `RestError` it threw or `500 internal`, instead of stopping the process.
+
 ## [0.4.0] - 2026-11-03
 
 ### Added

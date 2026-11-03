@@ -1,9 +1,16 @@
 import { SqlRenderer, type Dialect, type Tx } from '@crudy/restloom';
-import type { Pool } from 'pg';
+import pg, { type Pool, type PoolConfig } from 'pg';
 import { mapError } from './errors.js';
 import { introspect } from './introspect.js';
 
+export * from '@crudy/restloom';
 export { mapError } from './errors.js';
+
+/** A pg Pool, or what opens one: a connection string or a pool config. */
+export type PostgresConnection = Pool | PoolConfig | string;
+
+const poolOf = (c: PostgresConnection): Pool =>
+    typeof c === 'string' ? new pg.Pool({ connectionString: c }) : typeof (c as Pool).connect === 'function' ? (c as Pool) : new pg.Pool(c as PoolConfig);
 
 /** Postgres writes every primitive the core's defaults assume; subclass it to change one. */
 export class PostgresRenderer extends SqlRenderer {}
@@ -13,11 +20,13 @@ export interface PostgresOptions {
 }
 
 /**
- * The Postgres dialect over a `pg` Pool. Every request runs in one transaction
+ * The Postgres dialect over a `pg` Pool, given or opened from a connection
+ * string or config. Every request runs in one transaction
  * with a local statement timeout, read-only for reads, so a `transaction` hook
  * can set the role and session settings that row security reads.
  */
-export function postgres(pool: Pool, options: PostgresOptions = {}): Dialect {
+export function postgres(connection: PostgresConnection, options: PostgresOptions = {}): Dialect {
+    const pool = poolOf(connection);
     return {
         name: 'postgres',
         capabilities: { returning: true, estimatedCount: true, rowSecurity: true, procedures: true },

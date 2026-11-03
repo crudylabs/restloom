@@ -1,6 +1,6 @@
 {
   "name": "@crudy/restloom-sqlite",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "type": "module",
   "description": "SQLite dialect for restloom",
   "keywords": [
@@ -36,7 +36,7 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@crudy/restloom": "^0.4.0"
+    "@crudy/restloom": "^0.5.0"
   },
   "peerDependencies": {
     "better-sqlite3": ">=12"

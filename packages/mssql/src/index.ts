@@ -1,7 +1,20 @@
 import { RestError, type Dialect, type SqlRenderer } from '@crudy/restloom';
-import mssqlDriver, { type ConnectionPool } from 'mssql';
+import mssqlDriver, { type ConnectionPool, type config as MssqlConfig } from 'mssql';
 import { introspect } from './introspect.js';
 import { MssqlRenderer } from './renderer.js';
+
+export * from '@crudy/restloom';
+
+/** A connected mssql ConnectionPool, or what opens one: a connection string or config. */
+export type MssqlConnection = ConnectionPool | MssqlConfig | string;
+
+function poolOf(c: MssqlConnection): Promise<ConnectionPool> {
+    if (typeof c !== 'string' && typeof (c as ConnectionPool).request === 'function') return Promise.resolve(c as ConnectionPool);
+    const ready = new mssqlDriver.ConnectionPool(c as MssqlConfig).connect();
+    // A failed connection surfaces on the first request, not as an unhandled rejection at startup.
+    ready.catch(() => undefined);
+    return ready;
+}
 
 export { MssqlRenderer } from './renderer.js';
 
@@ -37,20 +50,21 @@ export interface MssqlOptions {
 }
 
 /**
- * The SQL Server 2022 dialect over an mssql ConnectionPool. Each request is one
+ * The SQL Server 2022 dialect over an mssql ConnectionPool, given or opened. Each request is one
  * transaction; the statement timeout is the pool's `requestTimeout`, since the
  * driver sets it per pool. Row security is SQL Server's security policies,
  * which a `transaction` hook feeds through sp_set_session_context.
  */
-export function mssql(pool: ConnectionPool, options: MssqlOptions = {}): Dialect {
+export function mssql(connection: MssqlConnection, options: MssqlOptions = {}): Dialect {
+    const ready = poolOf(connection);
     return {
         name: 'mssql',
         capabilities: { returning: true, estimatedCount: false, rowSecurity: true, procedures: true },
         renderer: options.renderer ?? new MssqlRenderer(),
         decode: (value) => (typeof value === 'string' ? JSON.parse(value) : value),
-        introspect: (scope) => introspect(pool, scope),
+        introspect: async (scope) => introspect(await ready, scope),
         async transaction(fn) {
-            const tx = new mssqlDriver.Transaction(pool);
+            const tx = new mssqlDriver.Transaction(await ready);
             await tx.begin();
             try {
                 const out = await fn({

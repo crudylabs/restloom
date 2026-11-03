@@ -1,7 +1,15 @@
 import { RestError, type Dialect, type SqlRenderer } from '@crudy/restloom';
-import type { Pool } from 'mysql2/promise';
+import { createPool, type Pool, type PoolOptions } from 'mysql2/promise';
 import { introspect } from './introspect.js';
 import { MysqlRenderer } from './renderer.js';
+
+export * from '@crudy/restloom';
+
+/** A mysql2/promise Pool, or what opens one: a connection URL or pool options. */
+export type MysqlConnection = Pool | PoolOptions | string;
+
+const poolOf = (c: MysqlConnection): Pool =>
+    typeof c === 'string' ? createPool({ uri: c }) : typeof (c as Pool).getConnection === 'function' ? (c as Pool) : createPool(c as PoolOptions);
 
 export { MysqlRenderer } from './renderer.js';
 
@@ -31,12 +39,13 @@ export interface MysqlOptions {
 }
 
 /**
- * The MySQL 8 dialect over a mysql2/promise Pool. Each request is one
+ * The MySQL 8 dialect over a mysql2/promise Pool, given or opened. Each request is one
  * transaction on one connection, in UTC, with MAX_EXECUTION_TIME for reads.
  * Text compares with each column's collation, so with a case-insensitive
  * collation `eq` ignores case.
  */
-export function mysql(pool: Pool, options: MysqlOptions = {}): Dialect {
+export function mysql(connection: MysqlConnection, options: MysqlOptions = {}): Dialect {
+    const pool = poolOf(connection);
     return {
         name: 'mysql',
         capabilities: { returning: false, estimatedCount: false, rowSecurity: false, procedures: true },

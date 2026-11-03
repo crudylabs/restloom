@@ -9,9 +9,9 @@ import { sqlite } from '../packages/sqlite/dist/index.js';
 // The table in docs/dialects.md is what readers compare databases by, on the
 // site too. It must say what each dialect's capabilities say.
 const DIALECTS = {
-    '@crudy/restloom-postgres': postgres({}),
-    '@crudy/restloom-mysql': mysql({}),
-    '@crudy/restloom-mssql': mssql({}),
+    '@crudy/restloom-postgres': postgres({ connect() {} }),
+    '@crudy/restloom-mysql': mysql({ getConnection() {} }),
+    '@crudy/restloom-mssql': mssql({ request() {} }),
     '@crudy/restloom-sqlite': sqlite({ pragma() {} }),
 };
 

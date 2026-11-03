@@ -2,29 +2,29 @@
 
 ## Install
 
-Install the core, the package for your database, and its driver:
+Install the package for your database. It brings the core and the database driver with it, except for SQLite, which also needs `better-sqlite3`:
 
 ```sh
-npm install @crudy/restloom @crudy/restloom-postgres pg
+npm install @crudy/restloom-postgres
 ```
 
-| Database | Package | Driver |
-|---|---|---|
-| PostgreSQL 13+ | `@crudy/restloom-postgres` | `pg` |
-| MySQL 8.0+ | `@crudy/restloom-mysql` | `mysql2` |
-| SQL Server 2022+ | `@crudy/restloom-mssql` | `mssql` |
-| SQLite 3.44+ | `@crudy/restloom-sqlite` | `better-sqlite3` |
+| Database | Package |
+|---|---|
+| PostgreSQL 13+ | `@crudy/restloom-postgres` |
+| MySQL 8.0+ | `@crudy/restloom-mysql` |
+| SQL Server 2022+ | `@crudy/restloom-mssql` |
+| SQLite 3.44+ | `@crudy/restloom-sqlite` |
+
+Each of them exports the whole core, so everything is imported from that one package. The examples in these pages use `@crudy/restloom-postgres`; with another database, import from its package instead.
 
 ## Serve a schema
 
 ```ts
 import http from 'node:http';
-import pg from 'pg';
-import { createREST, nodeListener } from '@crudy/restloom';
-import { postgres } from '@crudy/restloom-postgres';
+import { createREST, nodeListener, postgres } from '@crudy/restloom-postgres';
 
 const rest = createREST({
-    db: postgres(new pg.Pool({ connectionString: process.env.DATABASE_URL })),
+    db: postgres(process.env.DATABASE_URL),
     expose: { schemas: ['app'] },
 });
 

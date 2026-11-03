@@ -28,7 +28,7 @@ procedures: {
 For an API that writes everywhere, set `write` once, beside `expose`:
 
 ```ts
-import { createREST } from '@crudy/restloom';
+import { createREST } from '@crudy/restloom-postgres';
 
 createREST({
     db, // from a database package, see Dialects

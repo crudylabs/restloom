@@ -3,6 +3,8 @@ import type { Database } from 'better-sqlite3';
 import { introspect } from './introspect.js';
 import { SqliteRenderer } from './renderer.js';
 
+export * from '@crudy/restloom';
+
 export { SqliteRenderer } from './renderer.js';
 
 const CODES: Record<string, [number, string]> = {
@@ -27,7 +29,8 @@ export interface SqliteOptions {
 }
 
 /**
- * The SQLite dialect over a better-sqlite3 Database. It turns on foreign keys
+ * The SQLite dialect over a better-sqlite3 Database, or any object with its
+ * API, such as sql.js in a browser. It turns on foreign keys
  * and case-sensitive LIKE for the connection. One connection runs one
  * transaction at a time, so requests are queued. SQLite cannot stop a running
  * statement, so `limits.timeoutMs` does not apply, and it has no functions to

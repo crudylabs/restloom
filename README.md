@@ -37,19 +37,19 @@ Your backend stays in charge:
 | `@crudy/restloom-express` | Express handler |
 
 ```sh
-npm install @crudy/restloom @crudy/restloom-postgres pg
+npm install @crudy/restloom-postgres
 ```
+
+A database package brings the core and its driver, and exports the whole core.
 
 ## Use
 
 ```ts
 import http from 'node:http';
-import pg from 'pg';
-import { createREST, nodeListener } from '@crudy/restloom';
-import { postgres } from '@crudy/restloom-postgres';
+import { createREST, nodeListener, postgres } from '@crudy/restloom-postgres';
 
 const rest = createREST({
-    db: postgres(new pg.Pool()),
+    db: postgres(process.env.DATABASE_URL),
     expose: { schemas: ['app'] },
     resources: { todos: { write: true } },
 });

@@ -9,15 +9,16 @@ A dialect is the package that knows one database: how to read its catalog, how t
 | `@crudy/restloom-mssql` | SQL Server 2022+ | `JSON_OBJECT`, `STRING_AGG` | `OUTPUT` | no | security policies | scalar and table functions |
 | `@crudy/restloom-sqlite` | SQLite 3.44+ (better-sqlite3) | `json_object`, `json_group_array` | `RETURNING` | no | no | none |
 
+The PostgreSQL, MySQL and SQL Server packages bring their driver and open their own connection from a URL. To tune it, pass the driver's pool options instead, or a pool you already have: a `pg` Pool, a `mysql2/promise` Pool or a connected `mssql` ConnectionPool. The SQLite package takes a database object, so it runs on `better-sqlite3` in Node or on sql.js in a browser; install the one you use.
+
 Every dialect passes the same conformance suite, so a request answers the same rows on each. Regular expressions (`match`, `imatch`) need Postgres or MySQL, and array filters (`ov`, `cs`, `cd`) Postgres array columns; elsewhere they answer `unsupported`. Where else the dialects differ, the sections below say how.
 
 ## Postgres
 
 ```ts
-import pg from 'pg';
 import { postgres } from '@crudy/restloom-postgres';
 
-const db = postgres(new pg.Pool({ connectionString: process.env.DATABASE_URL }));
+const db = postgres(process.env.DATABASE_URL);
 ```
 
 - **Transactions:** every request is one transaction, `READ ONLY` for reads, with `SET LOCAL statement_timeout` from `limits.timeoutMs`.
@@ -28,10 +29,9 @@ const db = postgres(new pg.Pool({ connectionString: process.env.DATABASE_URL }))
 ## MySQL
 
 ```ts
-import { createPool } from 'mysql2/promise';
 import { mysql } from '@crudy/restloom-mysql';
 
-const db = mysql(createPool({ uri: process.env.DATABASE_URL }));
+const db = mysql(process.env.DATABASE_URL);
 ```
 
 - **Schemas:** MySQL's schemas are its databases: `expose: { schemas: ['shop'] }`.
@@ -44,10 +44,9 @@ const db = mysql(createPool({ uri: process.env.DATABASE_URL }));
 ## SQL Server
 
 ```ts
-import sql from 'mssql';
 import { mssql } from '@crudy/restloom-mssql';
 
-const db = mssql(await new sql.ConnectionPool(process.env.DATABASE_URL).connect());
+const db = mssql(process.env.DATABASE_URL);
 ```
 
 - **Version:** SQL Server 2022 or later, for `JSON_OBJECT`.
@@ -58,6 +57,10 @@ const db = mssql(await new sql.ConnectionPool(process.env.DATABASE_URL).connect(
 - **Procedures:** scalar and table-valued functions; T-SQL does not expose parameter defaults, so every argument is required. A T-SQL function cannot change data.
 
 ## SQLite
+
+```sh
+npm install @crudy/restloom-sqlite better-sqlite3
+```
 
 ```ts
 import Database from 'better-sqlite3';
@@ -77,7 +80,6 @@ const db = sqlite(new Database('app.db'));
 Every piece of SQL comes from one overridable method of the dialect's renderer. To change one, subclass it and pass it in:
 
 ```ts
-import pg from 'pg';
 import { PostgresRenderer, postgres } from '@crudy/restloom-postgres';
 
 class Renderer extends PostgresRenderer {
@@ -86,7 +88,7 @@ class Renderer extends PostgresRenderer {
     }
 }
 
-const db = postgres(new pg.Pool({ connectionString: process.env.DATABASE_URL }), { renderer: new Renderer() });
+const db = postgres(process.env.DATABASE_URL, { renderer: new Renderer() });
 ```
 
 The pieces are listed in [writing a dialect](./writing-a-dialect.md).

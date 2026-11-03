@@ -1,9 +1,10 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { RestError } from './errors.js';
 import type { RestResponse } from './options.js';
 import type { Rest } from './rest.js';
 
 export interface NodeListenerOptions<C> {
-    /** Builds the context hooks receive, e.g. the authenticated user. */
+    /** Builds the context hooks receive, e.g. the authenticated user. Throw a RestError to refuse the request. */
     context?(req: IncomingMessage): C | Promise<C>;
     /** Path the API is mounted under, e.g. /api. */
     prefix?: string;
@@ -47,6 +48,13 @@ export function nodeListener<C>(rest: Rest<C>, options: NodeListenerOptions<C> =
             const status = (err as { status?: number }).status ?? 400;
             return send(res, { status, headers: {}, body: { error: status === 413 ? 'body_too_large' : 'bad_body' } });
         }
+        let context: C;
+        try {
+            context = (await options.context?.(req)) as C;
+        } catch (err) {
+            const refusal = err instanceof RestError ? err : new RestError(500, 'internal');
+            return send(res, { status: refusal.status, headers: {}, body: { error: refusal.code, ...(refusal.detail ? { message: refusal.detail } : {}) } });
+        }
         const headers = Object.fromEntries(Object.entries(req.headers).map(([k, v]) => [k, Array.isArray(v) ? v.join(', ') : v]));
         send(res, await rest.handle({
             method: req.method ?? 'GET',
@@ -54,7 +62,7 @@ export function nodeListener<C>(rest: Rest<C>, options: NodeListenerOptions<C> =
             query: url.searchParams,
             headers,
             body,
-            context: (await options.context?.(req)) as C,
+            context,
         }));
     };
 }

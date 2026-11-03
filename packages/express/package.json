@@ -1,6 +1,6 @@
 {
   "name": "@crudy/restloom-express",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "type": "module",
   "description": "Express adapter for restloom",
   "keywords": [
@@ -36,7 +36,7 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@crudy/restloom": "^0.4.0"
+    "@crudy/restloom": "^0.5.0"
   },
   "peerDependencies": {
     "express": "^5.0.0"
