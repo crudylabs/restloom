@@ -1,5 +1,5 @@
 /** The docs pages whose examples are conformance cases, and the options every database runs them with. */
-export const PAGES = ['query-grammar.md', 'writes.md'];
+export const PAGES = ['query-grammar.md', 'writes.md', 'security.md'];
 
 const PROCEDURES = {
     'todos/{todo}/complete': { function: 'demo.complete_todo' },

@@ -56,6 +56,8 @@ POST /tags
 [{ "id": 7, "name": "a" }, { "name": "b" }]
 ```
 
+Answer: 400
+
 ```json
 { "error": "mixed_columns" }
 ```
@@ -67,6 +69,8 @@ POST /todos
 
 { "name": "book dentist", "status": "open", "pinned": false }
 ```
+
+Answer: 400
 
 ```json
 { "error": "not_writable", "message": "pinned" }
@@ -101,6 +105,8 @@ A row still referenced by another is not deleted:
 DELETE /tags/3
 ```
 
+Answer: 409
+
 ```json
 { "error": "still_referenced" }
 ```
@@ -108,6 +114,8 @@ DELETE /tags/3
 ```http
 DELETE /todos/1
 ```
+
+Answer: 405
 
 ```json
 { "error": "method_not_allowed" }
@@ -130,6 +138,8 @@ Answer: 200
 DELETE /steps
 ```
 
+Answer: 400
+
 ```json
 { "error": "filter_required" }
 ```
@@ -144,6 +154,8 @@ POST /tags
 { "id": 1, "name": "duplicate key" }
 ```
 
+Answer: 409
+
 ```json
 { "error": "duplicate" }
 ```
@@ -153,6 +165,8 @@ POST /steps
 
 { "id": 9, "title": "Call the clinic", "todo_id": 99, "priority": 1, "due_on": "2026-04-01" }
 ```
+
+Answer: 409
 
 ```json
 { "error": "reference_missing" }
@@ -170,6 +184,8 @@ POST /todos/3/complete
 { "note": "bought a new one" }
 ```
 
+Answer: 200
+
 ```json
 3
 ```
@@ -179,6 +195,8 @@ A function returning a set answers an array of its rows. File taxes belongs to A
 ```http
 POST /tags/home/todos
 ```
+
+Answer: 200
 
 ```json
 [
@@ -192,6 +210,8 @@ POST /todos/3/complete
 
 { "why": "too busy" }
 ```
+
+Answer: 400
 
 ```json
 { "error": "unknown_argument", "message": "why" }

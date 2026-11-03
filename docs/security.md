@@ -5,6 +5,7 @@ restloom decides what can be asked. Your backend decides who may ask it, through
 ## What restloom enforces
 
 - **Exposure:** only the schemas and tables you name are served, and only their visible columns.
+- **Sensitive columns:** a column whose name looks like a secret is hidden without being asked, see below.
 - **Bound values:** every value is a bound parameter, checked against its column's type before any SQL runs. Names come from the catalog and are quoted; nothing from a request is written into SQL.
 - **Bounded requests:** every request is limited:
 
@@ -20,6 +21,45 @@ restloom decides what can be asked. Your backend decides who may ask it, through
 A request over a limit is refused, never quietly cut down.
 
 - **Errors:** they answer stable codes. A database message never reaches the client. Unexpected errors answer `internal` and reach your `onError` hook.
+
+## Sensitive columns
+
+restloom reads every column name when it reads the catalog. A name made of a word such as `password`, `hash`, `salt`, `secret`, `token`, `api_key`, `private_key`, `otp`, `mfa` or `recovery`, alone or between underscores, marks the column as sensitive: `password_hash` and `reset_token` are hidden, `tokenizer` is not. The full list is in [Columns](./discovery.md#columns).
+
+A hidden column is not served at all. It cannot be read, filtered, sorted or written, `select=*` leaves it out, and naming it answers as a column that does not exist, so a client cannot even learn it is there:
+
+```http
+GET /users?select=name,password_hash
+```
+
+Answer: 400
+
+```json
+{ "error": "unknown_column", "message": "password_hash" }
+```
+
+The check runs on names, so it guards against the column nobody thought about when the table grew. It does not know what a column holds: hide a sensitive column with a harmless name yourself, with `hide`.
+
+To serve a column the check hides on purpose, name it in `show`. It then behaves as any other column, and is writable only if `write` lists it:
+
+```ts
+resources: {
+    files: { show: ['sha256_hash'] },
+    users: { hide: ['phone'] },
+}
+```
+
+`sensitive` replaces the whole pattern, for every resource. Start from `DEFAULT_SENSITIVE` to add words rather than lose the defaults:
+
+```ts
+import { createREST, DEFAULT_SENSITIVE } from '@crudy/restloom';
+
+createREST({
+    db,
+    expose: { schemas: ['app'] },
+    sensitive: new RegExp(`${DEFAULT_SENSITIVE.source}|(^|_)(iban|ssn)(_|$)`, 'i'),
+});
+```
 
 ## Hooks
 
