@@ -19,7 +19,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     env:
-      NODE_VERSION: v24.12.0
+      NODE_VERSION: v24.22.2
     steps:
       - name: Check out the tag
         run: |

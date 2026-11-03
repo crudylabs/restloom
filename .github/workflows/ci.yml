@@ -16,7 +16,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      NODE_VERSION: v24.12.0
+      NODE_VERSION: v24.22.2
       RESTLOOM_PG_URL: postgres://postgres@localhost:5432/postgres
       RESTLOOM_MYSQL_URL: mysql://root@127.0.0.1:3306
     services:
