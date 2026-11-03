@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { resources } from './fixture.mjs';
+import { buildResources } from '../dist/resources.js';
+import { catalog, resources } from './fixture.mjs';
 
 test('only exposed schemas become resources', () => {
     const r = resources();
@@ -38,6 +39,23 @@ test('writes are off by default and never reach generated or key columns', () =>
     assert.equal(a.columns.get('created_at').create, false);
     assert.equal(a.columns.get('id').update, false);
     assert.equal(a.write.delete, true);
+});
+
+test('a global write applies to every table that does not set its own', () => {
+    const r = resources({ write: { create: true, update: true, delete: true }, resources: { tags: { write: false }, users: { write: { update: ['name'] } } } });
+    assert.deepEqual(r.get('todos').write, { create: true, update: true, delete: true, bulk: false });
+    assert.equal(r.get('todos').columns.get('id').update, false);
+    assert.deepEqual(r.get('tags').write, { create: false, update: false, delete: false, bulk: false });
+    assert.deepEqual(r.get('users').write, { create: false, update: true, delete: false, bulk: false });
+    assert.equal(r.get('users').columns.has('password_hash'), false);
+});
+
+test('a global write leaves views read-only', () => {
+    const c = catalog();
+    c.tables.push({ ...c.tables.find((t) => t.name === 'tags'), name: 'tag_view', kind: 'view', primaryKey: [] });
+    const r = buildResources(c, { db: null, expose: { schemas: ['demo'] }, write: true });
+    assert.equal(r.get('tag_view').write.create, false);
+    assert.equal(r.get('tags').write.create, true);
 });
 
 test('options naming unknown resources or columns fail at load', () => {

@@ -92,8 +92,9 @@ export function buildResources(catalog: Catalog, options: RestOptions<unknown>):
     const resources = new Map<string, Resource>();
     for (const t of tables) {
         const name = named.get(t)!;
-        const o = config[name] ?? {};
-        if (o.expose === false) continue;
+        const own = config[name] ?? {};
+        if (own.expose === false) continue;
+        const o = own.write === undefined && t.kind === 'table' ? { ...own, write: options.write } : own;
         const key = o.key ?? (t.primaryKey.length ? t.primaryKey : t.columns.some((c) => c.name === 'id') ? ['id'] : []);
         const w = o.write === true ? { delete: true, bulk: false } : o.write || {};
         const columns = columnsOf(t, o, sensitive);

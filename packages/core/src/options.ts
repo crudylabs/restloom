@@ -34,6 +34,14 @@ export interface WriteOptions {
     bulk?: boolean;
 }
 
+/** What a global `write` allows on each table: whole methods, since a column list belongs to one resource. */
+export interface DefaultWriteOptions {
+    create?: boolean;
+    update?: boolean;
+    delete?: boolean;
+    bulk?: boolean;
+}
+
 export interface ResourceOptions {
     /** false removes a discovered table or view from the API. */
     expose?: boolean;
@@ -92,6 +100,11 @@ export interface RestOptions<C = unknown> {
     db: Dialect;
     /** Nothing is served until a schema or a table is named here. */
     expose: { schemas?: string[]; tables?: string[] };
+    /**
+     * Writes on every exposed table, unless its resource sets its own `write`.
+     * Views stay read-only until their resource allows writes.
+     */
+    write?: boolean | DefaultWriteOptions;
     resources?: Record<string, ResourceOptions>;
     procedures?: Record<string, ProcedureOptions>;
     /** Replaces the default list of sensitive name patterns. */

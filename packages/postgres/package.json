@@ -1,6 +1,6 @@
 {
   "name": "@crudy/restloom-postgres",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "type": "module",
   "description": "Postgres dialect for restloom",
   "keywords": ["restloom", "postgres", "postgresql", "rest", "api"],
@@ -18,7 +18,7 @@
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@crudy/restloom": "^0.3.0"
+    "@crudy/restloom": "^0.4.0"
   },
   "peerDependencies": {
     "pg": "^8.11.0"

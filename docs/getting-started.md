@@ -37,6 +37,8 @@ Every table and view of `app` is now a resource, read-only:
 curl -g 'http://localhost:3000/api/todos?select=id,name,owner(name)&status=eq.open'
 ```
 
+Add `write: true` beside `expose` to create, update and delete rows in every table too. Do it once your `authorize` hook decides who may write: [Writes](./writes.md#writes-on-every-table).
+
 ## Next
 
 - [Discovery and overrides](./discovery.md): what becomes a resource, which columns are hidden, how relations are named.

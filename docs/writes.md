@@ -1,6 +1,6 @@
 # Writes and procedures
 
-Writes are off until a resource enables them. The examples on this page run with these options, against the [demo schema](../conformance/fixtures/postgres.sql):
+Writes are off until you turn them on, for every table at once or one resource at a time. The examples on this page run with these options, against the [demo schema](../conformance/fixtures/postgres.sql):
 
 ```ts
 resources: {
@@ -15,6 +15,26 @@ procedures: {
 ```
 
 `write: true` allows create, update and delete of every visible column. A list allows only the columns named. Generated and identity columns are never writable, and neither is a key on update.
+
+## Writes on every table
+
+For an API that writes everywhere, set `write` once, beside `expose`:
+
+```ts
+createREST({
+    db,
+    expose: { schemas: ['app'] },
+    write: true,
+    resources: {
+        audit_log: { write: false },
+        users: { write: { update: ['name'] } },
+    },
+});
+```
+
+It applies to every exposed table; views stay read-only until their resource allows writes, since many views cannot be written. A resource that sets its own `write` uses it instead: `write: false` keeps one table read-only, a column list narrows another. `write: { create: true, update: true, delete: true, bulk: true }` adds updates and deletes by filter everywhere.
+
+What is never writable stays so: hidden and sensitive columns, generated columns, and keys on update; a bulk request still needs a filter. Who may write is decided by your `authorize` hook, which receives every write with its action: see [Security](./security.md#hooks).
 
 | Method | Path | Does | Answers |
 |---|---|---|---|

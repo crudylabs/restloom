@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-03
+
+### Added
+- A top-level `write` option turns writes on for every exposed table at once: `write: true`, or `{ create, update, delete, bulk }`. A resource's own `write` replaces it, and views stay read-only unless their resource allows writes.
+- Every write example in the docs states its status, and the security page describes sensitive columns and how to serve one.
+
 ## [0.3.1] - 2026-11-03
 
 ### Changed
