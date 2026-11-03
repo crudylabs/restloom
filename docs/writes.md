@@ -16,6 +16,13 @@ procedures: {
 
 `write: true` allows create, update and delete of every visible column. A list allows only the columns named. Generated and identity columns are never writable, and neither is a key on update.
 
+| Method | Path | Does | Answers |
+|---|---|---|---|
+| POST | `/tags` | creates one row, or an array of rows | 201 |
+| PATCH | `/tags/4` | updates one row | 204, or 200 with the row |
+| DELETE | `/tags/4` | deletes one row | 204, or 200 with the row |
+| PATCH, DELETE | `/steps?priority=lt.3` | by filter, only where `bulk: true` | 204, or 200 with the rows |
+
 ## Writes on every table
 
 For an API that writes everywhere, set `write` once, beside `expose`:
@@ -35,13 +42,6 @@ createREST({
 It applies to every exposed table; views stay read-only until their resource allows writes, since many views cannot be written. A resource that sets its own `write` uses it instead: `write: false` keeps one table read-only, a column list narrows another. `write: { create: true, update: true, delete: true, bulk: true }` adds updates and deletes by filter everywhere.
 
 What is never writable stays so: hidden and sensitive columns, generated columns, and keys on update; a bulk request still needs a filter. Who may write is decided by your `authorize` hook, which receives every write with its action: see [Security](./security.md#hooks).
-
-| Method | Path | Does | Answers |
-|---|---|---|---|
-| POST | `/tags` | creates one row, or an array of rows | 201 |
-| PATCH | `/tags/4` | updates one row | 204, or 200 with the row |
-| DELETE | `/tags/4` | deletes one row | 204, or 200 with the row |
-| PATCH, DELETE | `/steps?priority=lt.3` | by filter, only where `bulk: true` | 204, or 200 with the rows |
 
 ## Getting the rows back
 
