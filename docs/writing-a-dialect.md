@@ -3,6 +3,8 @@
 A dialect implements one interface:
 
 ```ts
+import type { Catalog, RestError, SqlRenderer, Tx } from '@crudy/restloom';
+
 interface Dialect {
     name: string;
     capabilities: { returning: boolean; estimatedCount: boolean; rowSecurity: boolean; procedures: boolean };

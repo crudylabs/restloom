@@ -3,9 +3,20 @@
 The core answers a plain request object, so it fits any framework:
 
 ```ts
+import pg from 'pg';
+import { createREST } from '@crudy/restloom';
+import { postgres } from '@crudy/restloom-postgres';
+
+const rest = createREST({
+    db: postgres(new pg.Pool({ connectionString: process.env.DATABASE_URL })),
+    expose: { schemas: ['app'] },
+});
+
 const response = await rest.handle({ method, path, query, headers, body, context });
 // { status, headers, body }
 ```
+
+The examples below use this `rest`.
 
 `handle` never throws: every failure is a response. `path` is the path below where the API is mounted (`/todos/4`), `query` a `URLSearchParams`, `body` the parsed JSON.
 
@@ -15,7 +26,7 @@ const response = await rest.handle({ method, path, query, headers, body, context
 
 ```ts
 import http from 'node:http';
-import { createREST, nodeListener } from '@crudy/restloom';
+import { nodeListener } from '@crudy/restloom';
 
 const api = nodeListener(rest, { prefix: '/api', context: (req) => userFrom(req) });
 http.createServer(api).listen(3000);
@@ -24,6 +35,8 @@ http.createServer(api).listen(3000);
 To serve other pages from the same server, hand only the API's paths to it:
 
 ```ts
+import http from 'node:http';
+
 http.createServer((req, res) => (req.url?.startsWith('/api/') ? api(req, res) : site(req, res))).listen(3000);
 ```
 
@@ -36,8 +49,10 @@ npm install @crudy/restloom-fastify
 ```
 
 ```ts
+import Fastify from 'fastify';
 import { restloom } from '@crudy/restloom-fastify';
 
+const app = Fastify();
 await app.register(restloom(rest, { context: (req) => req.user }), { prefix: '/api' });
 ```
 
@@ -50,8 +65,10 @@ npm install @crudy/restloom-express
 ```
 
 ```ts
+import express from 'express';
 import { restloom } from '@crudy/restloom-express';
 
+const app = express();
 app.use('/api', express.json(), restloom(rest, { context: (req) => req.user }));
 ```
 

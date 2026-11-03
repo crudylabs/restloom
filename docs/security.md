@@ -55,7 +55,7 @@ resources: {
 import { createREST, DEFAULT_SENSITIVE } from '@crudy/restloom';
 
 createREST({
-    db,
+    db, // from a database package, see Dialects
     expose: { schemas: ['app'] },
     sensitive: new RegExp(`${DEFAULT_SENSITIVE.source}|(^|_)(iban|ssn)(_|$)`, 'i'),
 });
@@ -64,8 +64,10 @@ createREST({
 ## Hooks
 
 ```ts
+import { createREST, RestError } from '@crudy/restloom';
+
 createREST({
-    db,
+    db, // from a database package, see Dialects
     expose: { schemas: ['app'] },
     hooks: {
         authorize(request, target) { /* throw a RestError to refuse */ },

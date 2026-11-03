@@ -28,8 +28,10 @@ procedures: {
 For an API that writes everywhere, set `write` once, beside `expose`:
 
 ```ts
+import { createREST } from '@crudy/restloom';
+
 createREST({
-    db,
+    db, // from a database package, see Dialects
     expose: { schemas: ['app'] },
     write: true,
     resources: {

@@ -14,9 +14,10 @@ Every dialect passes the same conformance suite, so a request answers the same r
 ## Postgres
 
 ```ts
+import pg from 'pg';
 import { postgres } from '@crudy/restloom-postgres';
 
-const db = postgres(pool);
+const db = postgres(new pg.Pool({ connectionString: process.env.DATABASE_URL }));
 ```
 
 - **Transactions:** every request is one transaction, `READ ONLY` for reads, with `SET LOCAL statement_timeout` from `limits.timeoutMs`.
@@ -76,6 +77,7 @@ const db = sqlite(new Database('app.db'));
 Every piece of SQL comes from one overridable method of the dialect's renderer. To change one, subclass it and pass it in:
 
 ```ts
+import pg from 'pg';
 import { PostgresRenderer, postgres } from '@crudy/restloom-postgres';
 
 class Renderer extends PostgresRenderer {
@@ -84,7 +86,7 @@ class Renderer extends PostgresRenderer {
     }
 }
 
-const db = postgres(pool, { renderer: new Renderer() });
+const db = postgres(new pg.Pool({ connectionString: process.env.DATABASE_URL }), { renderer: new Renderer() });
 ```
 
 The pieces are listed in [writing a dialect](./writing-a-dialect.md).
