@@ -87,7 +87,7 @@ createREST({
 
 ## Row security
 
-With Postgres, row security is the strongest perimeter: the database itself hides the rows a session may not see. Connect as a role without `BYPASSRLS`, and set what your policies read in the `transaction` hook:
+Row security needs PostgreSQL, or SQL Server with security policies (see [Dialects](./dialects.md#sql-server)). With Postgres, it is the strongest perimeter: the database itself hides the rows a session may not see. Connect as a role without `BYPASSRLS`, and set what your policies read in the `transaction` hook:
 
 ```ts
 async transaction(tx, context) {
